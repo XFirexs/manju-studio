@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <title>漫剧工作室 - 小说转漫剧生成平台</title>
+    <title>漫剧工作室 - 小说转漫剧AI平台</title>
     <meta name="description" content="AI驱动的小说转漫剧平台，支持人物一致性管理、分镜拆分、多API调用">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -16,7 +16,7 @@
             color: white;
         }
         .container {
-            max-width: 768px;
+            max-w: 768px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -97,6 +97,34 @@
             margin-bottom: 15px;
             color: #333;
         }
+        .api-selector {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        .api-selector label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+        .api-selector select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .api-provider {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #e8e8f0;
+            border-radius: 6px;
+            font-size: 13px;
+        }
         .form-group {
             margin-bottom: 15px;
         }
@@ -152,12 +180,12 @@
             padding: 6px 12px;
             font-size: 13px;
         }
-        .project-list, .character-list, .resource-list {
+        .character-grid, .scene-grid, .resource-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 15px;
         }
-        .project-card, .character-card, .resource-card {
+        .card {
             background: #f9fafb;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
@@ -165,13 +193,28 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        .project-card:hover, .character-card:hover, .resource-card:hover {
+        .card:hover {
             border-color: #667eea;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
         }
-        .card-icon {
-            font-size: 32px;
+        .card-preview {
+            width: 100%;
+            border-radius: 6px;
+            background: #f3f4f6;
             margin-bottom: 10px;
+            object-fit: cover;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+        .card-preview img {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            object-fit: cover;
+            background: #f3f4f6;
         }
         .card-title {
             font-size: 16px;
@@ -199,79 +242,35 @@
             font-weight: 500;
         }
         .badge-info { background: #dbeafe; color: #166534; }
-        .badge-warning { background: #fef3c7; color: #92400e; }
         .badge-success { background: #d1fae5; color: #047857; }
-        .btn-group {
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .status-badge {
             display: flex;
             gap: 10px;
-            margin-top: 15px;
         }
-        .avatar-upload-group {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 10px;
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
         }
-        .avatar-upload {
-            border: 2px dashed #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            min-height: 120px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        .status-dot.succeeded { background: #10b981; }
+        .status-dot.running { background: #f59e0b; animation: spin 1s linear infinite; }
+        .status-dot.failed { background: #ef4444; }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
-        .avatar-upload:hover {
-            border-color: #667eea;
-            background: #f8f0ff;
-        }
-        .avatar-preview {
+        .progress-bar {
             width: 100%;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-fill {
             height: 100%;
-            object-fit: cover;
-            border-radius: 4px;
-            background: #f3f4f6;
-        }
-        .resource-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            margin-bottom: 10px;
-        }
-        .resource-thumb {
-            width: 50px;
-            height: 50px;
-            border-radius: 4px;
-            object-fit: cover;
-            background: #f3f4f6;
-        }
-        .resource-info {
-            flex: 1;
-        }
-        .resource-name {
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 2px;
-        }
-        .resource-meta {
-            font-size: 11px;
-            color: #9ca3af;
-        }
-        .resource-delete {
-            color: #ef4444;
-            cursor: pointer;
-            font-size: 18px;
-            background: none;
-            border: none;
-            cursor: pointer;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+            transition: width 0.5s ease;
         }
         .modal-overlay {
             display: none;
@@ -319,6 +318,16 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        .generated-image {
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .image-info {
+            margin-top: 5px;
+            font-size: 11px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -329,25 +338,29 @@
                 <div class="logo-title">漫剧工作室</div>
             </div>
             <div class="nav">
-                <button id="btn-api" onclick="switchTab('api')">API配置</button>
+                <button id="btn-api" onclick="switchTab('api')">AI生成</button>
                 <button id="btn-create" onclick="openCreateProjectModal()">新建项目</button>
             </div>
         </div>
 
         <div class="nav">
-            <button id="btn-projects" class="active" onclick="switchTab('projects')">项目管理</button>
+            <button id="btn-projects" onclick="switchTab('projects')">项目管理</button>
             <button id="btn-characters" onclick="switchTab('characters')">人物管理</button>
-            <button id="btn-resources" onclick="switchTab('resources')">资源库</button>
+            <button id="content" onclick="switchTab('content')">内容创作</button>
             <button id="btn-api2" onclick="switchTab('api')">API配置</button>
         </div>
 
         <div class="content-area">
             <!-- 项目管理模块 -->
-            <div id="section-projects" class="section active">
+            <div id="section-projects" class="section">
                 <h2 class="section-title">项目管理</h2>
                 <div id="project-list" class="project-list">
-                    <!-- 动态加载项目列表 -->
+                    <div class="card" onclick="openCreateProjectModal()">
+                        <div class="card-preview">➕</div>
+                        <div class="card-title">新建项目</div>
+                    </div>
                 </div>
+                <p style="text-align: center; color: #999; margin-top: 20px;">暂无项目，点击"新建项目"创建</p>
             </div>
 
             <!-- 人物管理模块 -->
@@ -359,16 +372,58 @@
                 <div id="character-list" class="character-list">
                     <!-- 动态加载人物列表 -->
                 </div>
+                <p style="text-align: center; color: #999; margin-top: 20px;">暂无人物，点击"添加人物"创建</p>
             </div>
 
-            <!-- 资源库模块 -->
-            <div id="section-resources" class="section">
-                <h2 class="section-title">资源库</h2>
-                <p style="margin-bottom: 15px; color: #666;">
-                    <button class="btn-secondary" onclick="openUploadModal()">+ 上传资源</button>
-                </p>
-                <div id="resource-list" class="resource-list">
-                    <!-- 动态加载资源列表 -->
+            <!-- AI生成模块（新增）-->
+            <div id="section-content" class="section">
+                <h2 class="section-title">AI内容创作</h2>
+                
+                <div class="api-selector">
+                    <label class="form-label">选择图片生成节点</label>
+                    <select id="grsai-model" class="form-select">
+                        <option value="nano-banana-fast">香蕉二：nano-banana-fast (1K)</option>
+                        <option value="nano-banana-2">香蕉二：nano-banana-2-cl (1K)</option>
+                        <option value="nano-banana-2-4k-cl">香蕉二：nano-banana-2-4k-cl (4K)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">提示词</label>
+                    <textarea id="prompt-input" placeholder="输入生成描述，例如：一个可爱的猫咪在草地上玩耍" class="form-textarea"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">宽高比</label>
+                    <select id="aspect-ratio" class="form-select">
+                        <option value="auto">自动</option>
+                        <option value="1:1">1:1</option>
+                        <option value="16:9">16:9</option>
+                        <option value="9:16">9:16</option>
+                        <option value="4:3">4:3</option>
+                        <option value="3:2">3:2</option>
+                        <option value="2:3">2:3</option>
+                        <option value="5:4">5:4</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">图片大小</label>
+                    <select id="image-size" class="form-select">
+                        <option value="1K">1K (低清)</option>
+                        <option value="2K">2K (标准)</option>
+                        <option value="4K">4K (高质)</option>
+                    </select>
+                </div>
+
+                <button class="btn-primary" onclick="generateImage()">生成图片</button>
+                <span id="image-status" style="margin-left: 10px; font-size: 12px;"></span>
+                
+                <!-- 生成结果区域 -->
+                <div id="generated-result" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; display: none;">
+                    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 10px; color: #333;">生成结果</h3>
+                    <div id="image-preview"></div>
+                    <div id="image-info"></div>
                 </div>
             </div>
 
@@ -376,12 +431,36 @@
             <div id="section-api" class="section">
                 <h2 class="section-title">API 配置</h2>
                 
+                <!-- GRSai配置 -->
+                <div style="border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 20px;">
+                    <h3 style="color: #333; margin-bottom: 15px;">
+                        <span style="display: inline-block; width: 12px; height: 12px; background: #eab308; border-radius: 50%; margin-right: 8px;"></span>
+                        GRSai Nano Banana接口
+                    </h3>
+                    <div class="form-group">
+                        <label class="form-label">国内直连地址</label>
+                        <input type="text" value="https://grsai.dakka.com.cn" readonly class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">API Key</label>
+                        <input type="password" id="grsai-key" placeholder="输入你的GRSai API Key" class="form-input">
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <button class="btn-secondary btn-small" onclick="testGrsaiApi()">测试连接</button>
+                        <span id="grsai-status" style="margin-left: 10px; font-size: 12px;"></span>
+                    </div>
+                </div>
+
                 <!-- 橘子AI配置 -->
                 <div style="border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 20px;">
                     <h3 style="color: #333; margin-bottom: 15px;">
-                        <span style="display: inline-block; width: 12px; height: 12px; background: #orange-500; border-radius: 50%; margin-right: 8px;"></span>
+                        <span style="display: inline-block; width: 12px; height:12px; background: #f59e0b; border-radius: 50%; margin-right: 8px;"></span>
                         橘子AI视频生成
                     </h3>
+                    <div class="form-group">
+                        <label class="form-label">API地址</label>
+                        <input type="text" value="http://juziaigc.com/open/api/video" readonly class="form-input">
+                    </div>
                     <div class="form-group">
                         <label class="form-label">API Key</label>
                         <input type="password" id="juzi-key" placeholder="输入你的橘子AI API Key" class="form-input">
@@ -400,27 +479,20 @@
                     </div>
                 </div>
 
-                <!-- GRSai配置 -->
-                <div>
-                    <h3 style="color: #333; margin-bottom: 15px;">
-                        <span style="display: inline-block; width: 12px; height: 12px; background: #yellow-500; border-radius: 50%; margin-right: 8px;"></span>
-                        GRSai香蕉接口
-                    </h3>
-                    <div class="form-group">
-                        <label class="form-label">API Key</label>
-                        <input type="password" id="grsai-key" placeholder="输入你的GRSai API Key" class="form-input">
-                    </div>
-                    <p style="font-size: 13px; color: #999;">
-                        尚未配置接口文档，请提供API详情
-                    </p>
-                    <div style="margin-bottom: 10px;">
-                        <button class="btn-secondary btn-small" onclick="testGrsaiApi()">测试连接</button>
-                        <span id="grsai-status" style="margin-left: 10px; font-size: 12px;"></span>
-                    </div>
-                </div>
-
                 <button class="btn-primary" onclick="saveApiConfig()">保存配置</button>
                 <span id="save-status" style="margin-left: 10px; font-size: 12px;"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 生成图片弹窗 -->
+    <div id="modal-generate" class="modal-overlay">
+        <div class="modal">
+            <h3 class="modal-title">生成角色图片</h3>
+            <p id="generate-status" style="margin-bottom: 15px; color: #666;">准备生成中...</p>
+            <div id="result-container">
+                <div id="result-image"></div>
+                <div id="result-message"></div>
             </div>
         </div>
     </div>
@@ -464,25 +536,6 @@
                 <label class="form-label">描述</label>
                 <textarea id="char-desc" placeholder="人物性格、外貌等描述" class="form-textarea"></textarea>
             </div>
-            <h4 style="font-size: 14px; margin: 10px 0;">三视图上传</h4>
-            <div class="avatar-upload-group">
-                <div class="avatar-upload" onclick="uploadAvatar('front')">
-                    <div class="card-icon" id="preview-front">👤</div>
-                    <span class="card-desc">正面</span>
-                </div>
-                <div class="avatar-upload" onclick="uploadAvatar('side')">
-                    <div class="card-icon" id="preview-side">👥</div>
-                    <span class="card-desc">侧面</span>
-                </div>
-                <div class="avatar-upload" onclick="uploadAvatar('back')">
-                    <div class="card-icon" id="preview-back">🔙</div>
-                    <span class="card-desc">背面</span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">表情包上传</label>
-                <input type="file" id="char-expressions" multiple accept="image/*" style="width: 100%;">
-            </div>
             <div class="modal-actions">
                 <button class="btn-secondary" onclick="closeModal('modal-create-character')">取消</button>
                 <button class="btn-primary" onclick="createCharacter()">保存</button>
@@ -490,196 +543,304 @@
         </div>
     </div>
 
-    <!-- 上传资源弹窗 -->
-    <div id="modal-upload-resource" class="modal-overlay">
-        <div class="modal">
-            <h3 class="modal-title">上传资源</h3>
-            <div class="form-group">
-                <label class="form-label">资源名称</label>
-                <input type="text" id="resource-name" placeholder="资源名称" class="form-input">
-            </div>
-            <div class="form-group">
-                <label class="form-label">资源类型</label>
-                <select id="resource-type" class="form-select">
-                    <option value="image">图片</option>
-                    <option value="video">视频</option>
-                    <option value="audio">音频</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="form-label">分类</label>
-                <input type="text" id="resource-category" placeholder="分类，如：背景、角色、素材" class="form-input">
-            </div>
-            <div class="form-group">
-                <label class="form-label">选择文件</label>
-                <input type="file" id="resource-file" accept="image/*,video/*,audio/*" style="width: 100%;">
-            </div>
-            <div class="modal-actions">
-                <button class="btn-secondary" onclick="closeModal('modal-upload-resource')">取消</button>
-                <button class="btn-primary" onclick="uploadResource()">上传</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // 全局变量
-        let currentTab = 'projects';
-        let projects = [];
-        let characters = [];
-        let resources = [];
-
-        // 加载保存的数据
-        function loadSavedData() {
-            const savedProjects = localStorage.getItem('manju_projects');
-            const savedCharacters = localStorage.getItem('manju_characters');
-            const savedResources = localStorage.getItem('manju_resources');
-            const savedApiConfig = localStorage.getItem('manju_api_config');
-            
-            if (savedProjects) projects = JSON.parse(savedProjects);
-            if (savedCharacters) characters = JSON.parse(savedCharacters);
-            if (savedResources) resources = JSON.parse(savedResources);
-            if (savedApiConfig) {
-                const config = JSON.parse(savedApiConfig);
-                document.getElementById('juzi-key').value = config.juziApiKey || '';
-                document.getElementById('juzi-model').value = config.juziModel || 'VEO 3.1 Fast 多参考版';
-                document.getElementById('grsai-key').value = config.grsaiApiKey || '';
+        // 配置常量
+        const CONFIG = {
+            grsai: {
+                domestic: 'https://grsai.dakka.com.cn',
+                overseas: 'https://grsapi.com'
+            },
+            juzi: {
+                url: 'http://juziaigc.com/open/api/video',
+                model: 'nano-banana-fast',
+                models: ['nano-banana-fast', 'nano-banana-2-cl', 'nano-banana-2-4k-cl']
             }
-        }
+        };
 
-        // 保存数据到本地存储
-        function saveData() {
-            localStorage.setItem('manju_projects', JSON.stringify(projects));
-            localStorage.setItem('manju_characters', JSON.stringify(characters));
-            localStorage.setItem('manju_resources', JSON.stringify(resources));
-        }
+        // 当前选中的GRSai模型
+        let currentGrsaiModel = 'nano-banana-fast';
 
         // 切换标签页
         function switchTab(tabName) {
             currentTab = tabName;
             
-            // 更新导航按钮状态
             document.querySelectorAll('.nav button').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('btn-' + tabName).classList.add('active');
+            document.getElementById('btn-' + tabName)?.classList.add('active');
             
-            // 更新内容区域显示
             document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
-            document.getElementById('section-' + tabName).classList.add('active');
-            
-            // 重新渲染当前模块
-            renderProjects();
-            renderCharacters();
-            renderResources();
+            document.getElementById('section-' + tabName)?.classList.add('active');
         }
 
-        // 渲染项目列表
-        function renderProjects() {
-            const container = document.getElementById('project-list');
-            container.innerHTML = '';
+        // 生成图片
+        async function generateImage() {
+            const prompt = document.getElementById('prompt-input').value.trim();
+            const model = document.getElementById('grsai-model').value;
+            const aspectRatio = document.getElementById('aspect-ratio').value;
+            const imageSize = document.getElementById('image-size').value;
+            const statusEl = document.getElementById('image-status');
+            const resultContainer = document.getElementById('generated-result');
+            const previewEl = document.getElementById('result-image');
+            const infoEl = document('result-info');
+
+            if (!prompt) {
+                alert('请输入提示词');
+                return;
+            }
+
+            // 检查是否只允许测试一张图片
+            if (hasGeneratedToday()) {
+                alert('今日测试次数已达上限，请明天再试');
+                return;
+            }
+
+            const apiUrl = `${CONFIG.grsai.domestic}/v1/draw/nano-banana`;
             
-            // 添加新建项目卡片
-            const addCardHTML = `
-                <div class="project-card" onclick="openCreateProjectModal()">
-                    <div class="card-icon">➕</div>
-                    <div class="card-title">新建项目</div>
-                </div>
-            `;
-            container.innerHTML += addCardHTML;
-            
-            // 添加已有项目卡片
-            projects.forEach(project => {
-                const badgeClass = project.status === 'completed' ? 'badge-success' : project.status === 'in-progress' ? 'badge-warning' : 'badge-info';
-                const badgeText = project.status === 'completed' ? '已完成' : project.status === 'in-progress' ? '进行中' : '草稿';
+            statusEl.textContent = '正在生成中...';
+            resultContainer.style.display = 'block';
+            previewEl.innerHTML = '<div class="loading"></div>';
+            infoEl.textContent = '';
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${document.getElementById('grsai-key').value}`
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        prompt: prompt,
+                        aspectRatio: aspectRatio,
+                        imageSize: imageSize,
+                        urls: []
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('请求失败');
+                }
+
+                const data = await response.json();
                 
-                const projectHTML = `
-                    <div class="project-card">
-                        <div class="card-icon">📚</div>
-                        <div class="card-title">${escapeHtml(project.name)}</div>
-                        <div class="card-desc">${escapeHtml(project.description || '暂无描述')}</div>
-                        <div class="card-meta">
-                            <span>${project.scenes ? project.scenes.length : 0} 个分镜</span>
-                            <span class="badge ${badgeClass}">${badgeText}</span>
-                        </div>
-                        <button class="btn-small btn-danger" onclick="deleteProject('${project.id}')">删除</button>
-                    </div>
-                `;
-                container.innerHTML += projectHTML;
-            });
-            
-            container.innerHTML += '<p style="text-align: center; color: #999; margin-top: 20px;">' +
-                (projects.length === 0 ? '暂无项目，点击"新建项目"创建' : '') + '</p>';
+                if (data.code === 0 && data.data && data.data.results && data.data.results.length > 0) {
+                    const result = data.data.results[0];
+                    const imageUrl = result.url;
+                    const content = result.content || '生成成功';
+                    
+                    previewEl.innerHTML = `<img src="${imageUrl}" alt="${escapeHtml(content)}" class="generated-image">`;
+                    infoEl.innerHTML = `
+                        <div class="image-info">
+                            <strong>生成时间：</strong>${new Date().toLocaleString()}</div>
+                            <strong>模型：</strong>${escapeHtml(model)}</strong>
+                            <strong>尺寸：</strong>${escapeHtml(imageSize)}</strong>
+                            <strong>宽高比：</strong>${escapeHtml(aspectRatio)}</shape></div>
+                    `;
+                    
+                    // 保存到资源库
+                    saveToResources('GRSai_' + Date.now(), imageUrl, 'image', model, prompt);
+                    
+                    // 记录今日已生成
+                    recordGeneration();
+                    
+                    statusEl.textContent = '生成成功！';
+                    setTimeout(() => {
+                        statusEl.textContent = '';
+                    }, 2000);
+                } else {
+                    throw new Error(data.msg || '生成失败');
+                }
+            } catch (error) {
+                statusEl.textContent = '生成失败：' + error.message;
+                console.error('生成失败:', error);
+            }
         }
 
-        // 渲染人物列表
-        function renderCharacters() {
-            const container = document.getElementById('character-list');
-            container.innerHTML = '';
+        // 测试GRSai连接
+        async function testGrsaiApi() {
+            const key = document.getElementById('grsai-key').value;
+            const statusEl = document.getElementById('grsai-status');
             
-            // 添加"添加人物"按钮
-            if (characters.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #999; margin-top: 20px;">暂无人物，点击"添加人物"创建</p>';
+            if (!key) {
+                alert('请先输入API Key');
                 return;
             }
             
-            characters.forEach(char => {
-                const tagsHtml = char.tags ? char.tags.map(tag => 
-                    `<span class="badge ${tag === '三视图' ? 'badge-info' : 'badge-warning'}">${tag}</span>`
-                ).join('') : '';
+            statusEl.textContent = '测试中...';
+            
+            try {
+                const response = await fetch(`${CONFIG.grsai.domestic}/v1/draw/nano-banana`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${key}`
+                    },
+                    body: JSON.stringify({
+                        model: 'nano-banana-fast',
+                        prompt: '测试猫咪',
+                        aspectRatio: 'auto',
+                        imageSize: '1K',
+                        urls: []
+                    })
+                });
                 
-                const charHTML = `
-                    <div class="character-card">
-                        <div class="card-icon">👤</div>
-                        <div class="card-title">${escapeHtml(char.name)}</div>
-                        <div class="card-desc">${escapeHtml(char.role)}</div>
-                        <div class="card-meta">
-                            ${tagsHtml || '<span class="badge badge-info">未设置标签</span>'}
-                        </div>
-                        <div class="btn-group">
-                            <button class="btn-small btn-secondary" onclick="editCharacter('${char.id}')">编辑</button>
-                            <button class="btn-small btn-danger" onclick="deleteCharacter('${char.id}')">删除</button>
-                        </div>
-                    </div>
-                `;
-                container.innerHTML += charHTML;
-            });
+                const data = await response.json();
+                
+                if (data.code === 0) {
+                    statusEl.textContent = '✅ 连接成功！';
+                } else {
+                    statusEl.textContent = '❌ ' + (data.msg || '连接失败');
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ 连接失败';
+            }
         }
 
-        // 渲染资源列表
-        function renderResources() {
-            const container = document.getElementById('resource-list');
-            container.innerHTML = '';
+        // 测试橘子AI连接
+        async function testJuziApi() {
+            const key = document.getElementById('juzi-key').value;
+            const statusEl = document.getElementById('juzi-status');
             
-            // 添加"上传资源"按钮
-            const addBtnHTML = `
-                <div class="resource-item">
-                    <div class="resource-thumb">📁</div>
-                    <div class="resource-info">
-                        <div class="resource-name">上传资源</div>
-                        <div class="resource-meta">点击上方按钮上传</div>
-                    </div>
-                </div>
-            `;
-            container.innerHTML += addBtnHTML;
+            if (!key) {
+                alert('请先输入API Key');
+                return;
+            }
             
-            // 添加已有资源
-            resources.forEach(res => {
-                const sizeText = res.size ? formatFileSize(res.size) : '';
-                const typeIcon = res.type === 'image' ? '🖼️' : res.type === 'video' ? '🎬' : '🎵';
+            statusEl.textContent = '测试中...';
+            
+            try {
+                const response = await fetch('http://juziaigc.com/open/api/video', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${key}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'VEO 3.1 Fast 多参考版',
+                        prompt: '测试视频',
+                        aspect_ratio: '9:16',
+                        image_urls: []
+                    })
+                });
                 
-                const resHTML = `
+                const data = await response.json();
+                
+                if (data.code === 200 && data.data) {
+                    statusEl.textContent = '✅ 连接成功！';
+                } else {
+                    statusEl.textContent = '❌ ' + (data.msg || '连接失败');
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ 连接失败';
+            }
+        }
+
+        // 保存API配置
+        function saveApiConfig() {
+            const grsaiKey = document.getElementById('grsai-key').value;
+            const juziKey = document.getElementById('juzi-key').value;
+            
+            const config = {
+                grsaiKey,
+                juziKey,
+                activeProvider: 'grsai'
+            };
+            
+            localStorage.setItem('manju_api_config', JSON.stringify(config));
+            document.getElementById('save-status').textContent = '已保存！';
+            
+            setTimeout(() => {
+                document.getElementById('save-status').textContent = '';
+            }, 2000);
+        }
+
+        // 资源管理
+        function renderResources() {
+            const resources = JSON.parse(localStorage.getItem('manju_resources') || '[]');
+            const container = document.getElementById('resource-list');
+            
+            if (resources.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; margin-top: 20px;">暂无资源，在AI生成后自动添加到资源库</p>';
+                return;
+            }
+            
+            let html = '';
+            resources.slice(0, 8).forEach(res => {
+                const typeIcon = res.type === 'image' ? '🖼️' : res.type === 'video' ? '🎬' : '🎵';
+                const sizeText = res.size ? formatFileSize(res.size) : '';
+                const createdAt = res.createdAt ? new Date(res.createdAt).toLocaleDateString() : '';
+                
+                html += `
                     <div class="resource-item">
                         <div class="resource-thumb">${typeIcon}</div>
                         <div class="resource-info">
                             <div class="resource-name">${escapeHtml(res.name)}</div>
-                            <div class="resource-meta">
-                                <span>${res.category || '未分类'}</span>
-                                <span style="margin-left: 10px;">${sizeText}</span>
-                                <span class="resource-delete" onclick="deleteResource('${res.id}')">🗑️</span>
+                            <div>
+                                <span style="font-size: 11px; color: #999;">${res.category || '未分类'}</span>
+                                ${sizeText ? `<span style="margin-left: 10px;">${sizeText}</span>` : ''}
                             </div>
+                            <span class="resource-delete" onclick="deleteResource('${res.id}')">🗑️</span>
                         </div>
                     </div>
                 `;
-                container.innerHTML += resHTML;
             });
+            
+            if (resources.length > 8) {
+                html += '<p style="text-align: center; color: #999; margin-top: 20px;">显示前' + resources.length + '个资源，请分页查看更多</p>';
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function deleteResource(id) {
+            let resources = JSON.parse(localStorage.getItem('manju_resources') || '[]');
+            resources = resources.filter(r => r.id !== id);
+            localStorage.setItem('manju_resources', JSON.stringify(resources));
+            renderResources();
+        }
+
+        // 工具函数
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML.replace(/"/g, '&quot;');
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        function recordGeneration() {
+            let records = JSON.parse(localStorage.getItem('manju_generation_history') || '[]');
+            records.push({
+                time: new Date().toISOString(),
+                count: 1
+            });
+            localStorage.setItem('manju_generation_history', JSON.stringify(records));
+        }
+
+        function hasGeneratedToday() {
+            let records = JSON.parse(localStorage.getItem('manju_generation_history') || '[]');
+            const today = new Date().toISOString().split('T')[0];
+            const count = records.filter(r => r.time.startsWith(today)).reduce((sum, r) => sum + r.count, 0);
+            return count >= 1;
+        }
+
+        function saveToResources(id, url, type, source, prompt) {
+            let resources = JSON.parse(localStorage.getItem('manju_resources') || '[]');
+            resources.unshift({
+                id,
+                name: prompt.substring(0, 20) + '...',
+                type,
+                url,
+                category: 'AI生成-' + source,
+                size: 0,
+                createdAt: new Date().toISOString()
+            });
+            localStorage.setItem('manju_resources', JSON.stringify(resources));
         }
 
         // 弹窗管理
@@ -709,7 +870,8 @@
                 return;
             }
             
-            const project = {
+            let projects = JSON.parse(localStorage.getItem('manju_projects') || '[]');
+            projects.unshift({
                 id: 'proj_' + Date.now(),
                 name,
                 description: desc,
@@ -717,21 +879,12 @@
                 scenes: [],
                 status: 'draft',
                 createdAt: new Date().toISOString()
-            };
+            });
+            localStorage.setItem('manju_projects', JSON.stringify(projects));
             
-            projects.unshift(project);
-            saveData();
-            renderProjects();
             closeModal('modal-create-project');
+            switchTab('projects');
             alert('项目创建成功！');
-        }
-
-        function deleteProject(id) {
-            if (confirm('确定要删除这个项目吗？')) {
-                projects = projects.filter(p => p.id !== id);
-                saveData();
-                renderProjects();
-            }
         }
 
         // 新建人物
@@ -739,7 +892,6 @@
             document.getElementById('char-name').value = '';
             document.getElementById('char-role').value = '';
             document.getElementById('char-desc').value = '';
-            document.getElementById('char-expressions').value = '';
             openModal('modal-create-character');
         }
 
@@ -747,14 +899,14 @@
             const name = document.getElementById('char-name').value.trim();
             const role = document.getElementById('char-role').value.trim();
             const desc = document.getElementById('char-desc').value.trim();
-            const expressionsFile = document.getElementById('char-expressions').files[0];
             
             if (!name || !role) {
                 alert('请输入姓名和角色');
                 return;
             }
             
-            const character = {
+            let characters = JSON.parse(localStorage.getItem('manju_characters') || '[]');
+            characters.unshift({
                 id: 'char_' + Date.now(),
                 name,
                 role,
@@ -765,197 +917,37 @@
                     back: '',
                     expressions: []
                 },
-                tags: ['新建', '三视图'],
+                tags: ['新建', '待生成三视图'],
                 createdAt: new Date().toISOString()
-            };
+            });
+            localStorage.setItem('manju_characters', JSON.stringify(characters));
             
-            if (expressionsFile) {
-                character.images.expressions.push(expressionsFile.name);
-            }
-            
-            characters.unshift(character);
-            saveData();
-            renderCharacters();
             closeModal('modal-create-character');
+            switchTab('characters');
             alert('人物添加成功！');
         }
 
-        function deleteCharacter(id) {
-            if (confirm('确定要删除这个人物吗？')) {
-                characters = characters.filter(c => c.id !== id);
-                saveData();
-                renderCharacters();
-            }
-        }
-
-        // 上传资源
-        function openUploadModal() {
-            document.getElementById('resource-name').value = '';
-            document.getElementById('resource-type').value = 'image';
-            document.getElementById('resource-category').value = '';
-            document.getElementById('resource-file').value = '';
-            openModal('modal-upload-resource');
-        }
-
-        function uploadResource() {
-            const name = document.getElementById('resource-name').value.trim();
-            const type = document.getElementById('resource-type').value;
-            const category = document.getElementById('resource-category').value.trim();
-            const file = document.getElementById('resource-file').files[0];
-            
-            if (!name || !file) {
-                alert('请填写资源名称并选择文件');
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const fileData = e.target.result.split(',')[1];
-                resourceUploadSuccess(name, type, category, file.name, fileData);
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function resourceUploadSuccess(name, type, category, fileName, dataUrl) {
-            const resource = {
-                id: 'res_' + Date.now(),
-                name: name,
-                type: type,
-                category: category || '未分类',
-                url: dataUrl,
-                size: Math.round(dataUrl.length * 0.736 / 1024), // 大约大小（KB）
-                createdAt: new Date().toISOString()
-            };
-            
-            resources.unshift(resource);
-            saveData();
+        // 资源管理
+        function renderResources() {
             renderResources();
-            closeModal('modal-upload-resource');
-            alert('资源上传成功！');
         }
 
         function deleteResource(id) {
-            if (confirm('确定要删除这个资源吗？')) {
-                resources = resources.filter(r => r.id !== id);
-                saveData();
-                renderResources();
-            }
-        }
-
-        // 图片预览
-        function showImagePreview(input, previewId) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = document.getElementById(previewId);
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        // 编辑人物
-        function editCharacter(id) {
-            const char = characters.find(c => c.id === id);
-            if (char) {
-                document.getElementById('char-name').value = char.name;
-                document.getElementById('char-role').value = char.role;
-                document.getElementById('cat-desc').value = char.description;
-                openModal('modal-create-character');
-            }
-        }
-
-        // 保存API配置
-        function saveApiConfig() {
-            const juziKey = document.getElementById('juzi-key').value;
-            const juziModel = document.getElementById('juzi-model').value;
-            const grsaiKey = document.getElementById('grsai-key').value;
-            
-            const config = {
-                juziKey,
-                juziModel,
-                grsaiKey,
-                activeProvider: 'juzi'
-            };
-            
-            localStorage.setItem('manju_api_config', JSON.stringify(config));
-            document.getElementById('save-status').textContent = '已保存！';
-            
-            setTimeout(() => {
-                document.getElementById('save-status').textContent = '';
-            }, 2000);
-        }
-
-        // 测试橘子AI连接
-        async function testJuziApi() {
-            const key = document.getElementById('juzi-key').value;
-            const statusEl = document.getElementById('juzi-status');
-            
-            if (!key) {
-                alert('请先输入API Key');
-                return;
-            }
-            
-            statusEl.textContent = '测试中...';
-            statusEl.className = 'loading';
-            
-            try {
-                // 模拟测试
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                statusEl.textContent = '✅ 连接成功！';
-                statusEl.className = 'text-green-600';
-            } catch (error) {
-                statusEl.textContent = '❌ 连接失败';
-                statusEl.className = 'text-red-600';
-            }
-        }
-
-        // 测试GRSai连接
-        async function testGrsaiApi() {
-            const key = document.getElementById('grsai-key').value;
-            const statusEl = document.getElementById('grsai-status');
-            
-            if (!key) {
-                alert('请先输入API Key');
-                return;
-            }
-            
-            statusEl.textContent = '测试中...';
-            statusEl.className = 'loading';
-            
-            try {
-                // 模拟测试
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                statusEl.textContent = '✅ 连接成功！';
-                statusEl.className = 'text-green-600';
-            } catch (error) {
-                statusEl.textContent = '❌ 连接失败';
-                statusEl.className = 'text-red-600';
-            }
-        }
-
-        // HTML转义
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML.replace(/"/g, '&quot;');
-        }
-
-        // 格式化文件大小
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+            let resources = JSON.parse(localStorage.getItem('manju_resources') || '[]');
+            resources = resources.filter(r => r.id !== id);
+            localStorage.setItem('manju_resources', JSON.stringify(resources));
+            renderResources();
         }
 
         // 初始化
         window.addEventListener('DOMContentLoaded', function() {
-            loadSavedData();
+            // 加载配置
+            const savedConfig = JSON.parse(localStorage.getItem('manju_api_config') || '{}');
+            if (savedConfig.grsaiKey) document.getElementById('grsai-key').value = savedConfig.grsaiKey;
+            if (savedConfig.juziKey) document.getElementById('juzi-key').value = savedConfig.juziKey;
+            
+            // 加载资源
+            renderResources();
         });
     </script>
 </body>
