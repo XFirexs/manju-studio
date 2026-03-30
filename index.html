@@ -61,7 +61,7 @@
         
         /* 主容器 */
         .main-container {
-            max-width: 1900px;
+            max-width: 1400px;
             margin: 20px auto;
             padding: 0 20px;
         }
@@ -146,56 +146,38 @@
             cursor: pointer;
         }
         
-        /* 6列网格布局 */
+        /* 3列网格布局 */
         .scene-grid {
             display: grid;
-            grid-template-columns: 200px 180px 280px 240px 200px 280px;
-            gap: 15px;
+            grid-template-columns: 280px 1fr 1fr;
+            gap: 20px;
             align-items: start;
         }
         
-        /* 通用输入框 */
-        .input-box {
+        /* 板块样式 */
+        .panel {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 12px;
+            border-radius: 10px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            min-height: 120px;
+            gap: 12px;
         }
-        .input-label {
-            font-size: 12px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 4px;
+        .panel-header {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        .input-textarea, .input-input {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            padding: 10px;
-            color: #fff;
-            font-size: 12px;
-            width: 100%;
-            resize: none;
-        }
-        .input-textarea:focus, .input-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        .input-textarea {
-            min-height: 80px;
+        .panel-icon {
+            font-size: 16px;
         }
         
         /* 7个参考图区域 */
-        .reference-area {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 12px;
-        }
         .ref-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -295,27 +277,43 @@
             border-radius: 3px;
         }
         
+        /* 通用输入框 */
+        .input-textarea {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 10px;
+            color: #fff;
+            font-size: 12px;
+            width: 100%;
+            resize: none;
+            min-height: 60px;
+        }
+        .input-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
         /* 图片生成框 */
-        .image-gen-box {
-            background: rgba(0, 0, 0, 0.3);
+        .image-preview-box {
+            background: rgba(0, 0, 0, 0.2);
             border: 2px dashed rgba(255, 255, 255, 0.2);
             border-radius: 8px;
-            min-height: 180px;
+            min-height: 150px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
             position: relative;
-            padding: 10px;
+            overflow: hidden;
         }
-        .image-gen-box.has-image {
+        .image-preview-box.has-image {
             border-style: solid;
             border-color: #667eea;
+            padding: 8px;
         }
         .image-preview {
             width: 100%;
-            max-height: 160px;
+            max-height: 140px;
             object-fit: contain;
             border-radius: 6px;
             cursor: pointer;
@@ -323,18 +321,28 @@
         .image-preview:hover {
             opacity: 0.9;
         }
+        .empty-hint {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+            text-align: center;
+            padding: 10px;
+        }
+        
+        /* 按钮 */
         .btn-gen-image {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
             color: white;
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 500;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
         }
         .btn-gen-image:hover {
             opacity: 0.9;
@@ -343,29 +351,30 @@
             opacity: 0.6;
             cursor: not-allowed;
         }
-        .progress-bar {
+        
+        .btn-gen-video {
+            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            overflow: hidden;
-            display: none;
         }
-        .progress-bar.active {
-            display: block;
+        .btn-gen-video:hover {
+            opacity: 0.9;
         }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.3s;
+        .btn-gen-video:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
         
-        /* 视频提示词 */
-        .video-prompt-box {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
         .btn-regen-prompt {
             background: rgba(102, 126, 234, 0.2);
             border: 1px solid rgba(102, 126, 234, 0.3);
@@ -380,59 +389,6 @@
             background: rgba(102, 126, 234, 0.3);
         }
         
-        /* 视频生成框 */
-        .video-gen-box {
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            min-height: 180px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            position: relative;
-            padding: 10px;
-        }
-        .video-gen-box.has-video {
-            border-style: solid;
-            border-color: #f59e0b;
-        }
-        .video-preview {
-            width: 100%;
-            max-height: 160px;
-            object-fit: contain;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        .btn-gen-video {
-            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .btn-gen-video:hover {
-            opacity: 0.9;
-        }
-        .btn-gen-video:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        /* 操作按钮组 */
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-            flex-wrap: wrap;
-        }
         .btn-small {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -452,6 +408,40 @@
         }
         .btn-download:hover {
             background: rgba(34, 197, 94, 0.3);
+        }
+        
+        /* 进度条 */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            display: none;
+        }
+        .progress-bar.active {
+            display: block;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+        
+        /* 操作按钮组 */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        
+        /* 提示信息 */
+        .hint-text {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 10px;
+            text-align: center;
+            margin-top: 5px;
         }
         
         /* 全屏预览 */
@@ -511,17 +501,14 @@
         }
         
         /* 响应式 */
-        @media (max-width: 1400px) {
+        @media (max-width: 1200px) {
             .scene-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
+                grid-template-columns: 1fr;
+                gap: 15px;
             }
         }
         
         @media (max-width: 768px) {
-            .scene-grid {
-                grid-template-columns: 1fr;
-            }
             .ref-grid, .video-ref-grid {
                 grid-template-columns: repeat(4, 1fr);
             }
@@ -672,7 +659,6 @@
             const sceneData = {
                 id: sceneId,
                 number: sceneCounter,
-                novel: '',
                 imagePrompt: '',
                 referenceImages: new Array(7).fill(null),
                 generatedImage: null,
@@ -735,65 +721,57 @@
                         <button class="btn-delete-row" onclick="deleteSceneRow('${scene.id}')">删除</button>
                     </div>
                     <div class="scene-grid">
-                        <!-- 1. 小说原文 -->
-                        <div class="input-box">
-                            <div class="input-label">1. 小说原文</div>
-                            <textarea class="input-textarea" placeholder="粘贴小说原文内容..." 
-                                      oninput="updateSceneData('${scene.id}', 'novel', this.value)">${scene.novel}</textarea>
-                        </div>
-                        
-                        <!-- 2. 生图说明 -->
-                        <div class="input-box">
-                            <div class="input-label">2. 生图说明</div>
-                            <textarea class="input-textarea" placeholder="描述要生成的画面..." 
-                                      oninput="updateSceneData('${scene.id}', 'imagePrompt', this.value)">${scene.imagePrompt}</textarea>
-                        </div>
-                        
-                        <!-- 3. 7个参考图（用于生图） -->
-                        <div class="reference-area">
-                            <div class="input-label">3. 参考图（7张）</div>
+                        <!-- 第1列：7个参考图 -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <span class="panel-icon">🖼️</span>
+                                参考图（7张）
+                            </div>
                             <div class="ref-grid">
                                 ${refSlotsHtml}
                             </div>
                         </div>
                         
-                        <!-- 4. 生成图片 -->
-                        <div class="image-gen-box ${scene.generatedImage ? 'has-image' : ''}" id="${scene.id}_image-box">
-                            ${scene.generatedImage ? 
-                                `<img src="${scene.generatedImage}" class="image-preview" onclick="previewImage('${scene.generatedImage}')" alt="生成的图片">
-                                <div class="progress-bar" id="${scene.id}_progress" style="display: none;"></div>
-                                <div class="action-buttons">
-                                    <button class="btn-small btn-download" onclick="downloadImage('${scene.id}')">下载</button>
-                                    <button class="btn-small" onclick="regenerateImage('${scene.id}')">重新生成</button>
-                                </div>` :
-                                `<div style="color: rgba(255, 255, 255, 0.4); font-size: 12px;">点击下方按钮生成图片</div>
-                                <div class="progress-bar" id="${scene.id}_progress"></div>`
-                            }
+                        <!-- 第2列：生图说明 + 生成图片 -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <span class="panel-icon">🎨</span>
+                                图片生成
+                            </div>
+                            <textarea class="input-textarea" placeholder="描述要生成的画面..." 
+                                      oninput="updateSceneData('${scene.id}', 'imagePrompt', this.value)">${scene.imagePrompt}</textarea>
+                            <div class="image-preview-box ${scene.generatedImage ? 'has-image' : ''}" id="${scene.id}_image-box">
+                                ${scene.generatedImage ? 
+                                    `<img src="${scene.generatedImage}" class="image-preview" onclick="previewImage('${scene.generatedImage}')" alt="生成的图片">` :
+                                    '<div class="empty-hint">生成图片后会显示在这里</div>'
+                                }
+                            </div>
+                            <div class="progress-bar" id="${scene.id}_progress"></div>
                             <button class="btn-gen-image" id="${scene.id}_btn-gen" onclick="generateImage('${scene.id}')">
                                 <span>🎨</span><span id="${scene.id}_btn-text">生成图片</span>
                             </button>
+                            ${scene.generatedImage ? `
+                                <div class="action-buttons">
+                                    <button class="btn-small btn-download" onclick="downloadImage('${scene.id}')">下载</button>
+                                    <button class="btn-small" onclick="regenerateImage('${scene.id}')">重新生成</button>
+                                </div>
+                            ` : ''}
                         </div>
                         
-                        <!-- 5. 视频提示词 -->
-                        <div class="input-box video-prompt-box">
-                            <div class="input-label">5. 视频提示词</div>
+                        <!-- 第3列：视频提示词 + 生成视频 -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <span class="panel-icon">🎬</span>
+                                视频生成
+                            </div>
                             <textarea class="input-textarea" placeholder="描述视频内容..." 
                                       oninput="updateSceneData('${scene.id}', 'videoPrompt', this.value)">${scene.videoPrompt}</textarea>
-                            <button class="btn-regen-prompt" onclick="regenerateVideoPrompt('${scene.id}')">✨ 智能生成提示词</button>
-                        </div>
-                        
-                        <!-- 6. 视频生成（含3个参考图） -->
-                        <div class="video-gen-box ${scene.generatedVideo ? 'has-video' : ''}" id="${scene.id}_video-box">
-                            ${scene.generatedVideo ? 
-                                `<img src="${scene.generatedVideo}" class="video-preview" onclick="previewImage('${scene.generatedVideo}')" alt="生成的视频">` :
-                                `<div style="color: rgba(255, 255, 255, 0.4); font-size: 12px;">上传3个参考图后生成视频</div>`
-                            }
-                            
-                            <!-- 3个视频参考图 -->
-                            <div class="video-ref-grid" style="width: 100%; margin-bottom: 10px;">
+                            <div class="video-ref-grid" style="margin-top: 8px;">
                                 ${videoRefSlotsHtml}
                             </div>
-                            
+                            ${!scene.videoRefImages.some(img => img !== null) ? 
+                                '<div class="hint-text">提示：生成图片后自动添加到参考图1</div>' : ''
+                            }
                             <button class="btn-gen-video" id="${scene.id}_btn-gen-video" onclick="generateVideo('${scene.id}')" 
                                     ${!scene.videoRefImages.some(img => img !== null) ? 'disabled' : ''}>
                                 <span>🎬</span>
@@ -801,9 +779,7 @@
                                     ${!scene.videoRefImages.some(img => img !== null) ? '先生成图片或上传参考图' : '生成视频'}
                                 </span>
                             </button>
-                            ${!scene.videoRefImages.some(img => img !== null) ? 
-                                '<div style="color: rgba(255,255,255,0.4); font-size: 10px; margin-top: 5px;">提示：生成图片后自动添加到参考图1</div>' : ''
-                            }
+                            <button class="btn-regen-prompt" onclick="regenerateVideoPrompt('${scene.id}')">✨ 智能生成提示词</button>
                         </div>
                     </div>
                 </div>
@@ -905,7 +881,15 @@
             event.target.value = '';
         }
         
-        // 生成图片 - 自动添加到视频参考图
+        // 更新场景数据
+        function updateSceneData(sceneId, field, value) {
+            const scene = scenes.find(s => s.id === sceneId);
+            if (scene) {
+                scene[field] = value;
+            }
+        }
+        
+        // 生成图片
         async function generateImage(sceneId) {
             const scene = scenes.find(s => s.id === sceneId);
             if (!scene) return;
@@ -1160,14 +1144,6 @@
                 alert('视频提示词已生成！');
             } else {
                 alert('请先填写生图说明');
-            }
-        }
-        
-        // 更新场景数据
-        function updateSceneData(sceneId, field, value) {
-            const scene = scenes.find(s => s.id === sceneId);
-            if (scene) {
-                scene[field] = value;
             }
         }
         
