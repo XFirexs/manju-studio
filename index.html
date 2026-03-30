@@ -3,24 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>摶然学明条故</title>
+    <title>漫剧工作室</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
+            padding: 20px;
         }
         .container {
             text-align: center;
-            padding: 20px;
+            max-width: 800px;
+            width: 100%;
         }
         h1 { font-size: 3rem; margin-bottom: 20px; }
         p { font-size: 1.2rem; margin-bottom: 30px; }
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
         .btn {
             background: white;
             color: #667eea;
@@ -28,20 +36,64 @@
             border-radius: 50px;
             text-decoration: none;
             font-weight: bold;
-            display: inline-block;
-            margin: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 120px;
         }
-        .btn:hover { transform: scale(1.05); transition: 0.3s; }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .info {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            text-align: left;
+        }
+        .info h3 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        .info p {
+            font-size: 0.9rem;
+            margin: 5px 0;
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏛 墹;敨乘明条故</h1>
-        <p>啌本价到来文庿 即格提</p>
-        <a href="#" class="btn">大生施路／</a>
-        <a href="#" class="btn">徜中不的是名</a>
-        <a href="#" class="btn">搜放管分宝</a>
-        <a href="#" class="btn":API、生可码／</a>
+        <h1>🎬 漫剧工作室</h1>
+        <p>小说转漫剧生成平台 - 全自动版</p>
+        
+        <div class="btn-group">
+            <button class="btn" onclick="showInfo('api')">API配置</button>
+            <button class="btn" onclick="showInfo('project')">项目管理</button>
+            <button class="btn" onclick="showInfo('character')">人物管理</button>
+            <button class="btn" onclick="showInfo('resource')">资源库</button>
+        </div>
+        
+        <div class="info">
+            <h3>✨ 功能特点</h3>
+            <p>✅ API配置 - 支持橘子AI视频生成、GRSai香蕉接口</p>
+            <p>✅ 项目管理 - 创建和管理多个漫剧项目</p>
+            <p>✅ 人物管理 - 三视图、角色设定管理</p>
+            <p>✅ 资源库 - 图片/视频资源统一管理</p>
+        </div>
     </div>
+    
+    <script>
+        function showInfo(type) {
+            const messages = {
+                'api': '🔧 API配置功能\n\n支持橘子AI视频生成接口\n支持GRSai香蕉接口\n自由切换不同的模型和API\n配置完成后，立即可以使用',
+                'project': '📚 项目管理功能\n\n创建新的漫剧项目\n管理小说内容\n拆分分镜脚本\n查看项目进度',
+                'character': '👤 人物管理功能\n\n创建和管理角色\n上传三视图（正面、侧面、背面）\n管理表情包\n保持人物一致性',
+                'resource': '🖼️ 资源库功能\n\n统一管理所有资源\n分类存储\n快速检索\n批量操作'
+            };
+            alert(messages[type]);
+        }
+    </script>
 </body>
 </html>
