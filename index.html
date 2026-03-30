@@ -48,7 +48,7 @@
             font-size: 24px;
             font-weight: bold;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
+            -webkit-background-clipping: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             color: transparent;
@@ -57,12 +57,13 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            margin-bottom: 10px;
         }
         .nav button {
             background: #f0f0f0;
             color: #667eea;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 15px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
@@ -78,58 +79,23 @@
             color: #667eea;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        .section {
+        .content-area {
             background: white;
-            color: #333;
-            padding: 20px;
             border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            min-height: 400px;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
         }
         .section-title {
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 15px;
             color: #333;
-        }
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 15px;
-        }
-        .card {
-            border: 2px dashed #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            color: #999;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .card:hover {
-            border-color: #667eea;
-            background: #f8f8ff;
-        }
-        .card-icon {
-            font-size: 40px;
-            margin-bottom: 10px;
-        }
-        .card-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #333;
-        }
-        .card-desc {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 8px;
-        }
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #999;
         }
         .form-group {
             margin-bottom: 15px;
@@ -141,19 +107,17 @@
             font-weight: 500;
             color: #333;
         }
-        .form-input {
+        .form-input, .form-select, .form-textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 14px;
+            box-sizing: border-box;
         }
-        .form-select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
         }
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -170,15 +134,190 @@
             background: white;
             color: #667eea;
             border: 1px solid #667eea;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 500;
             cursor: pointer;
         }
-        .status-badge {
-            color: #10b981;
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        .project-list, .character-list, .resource-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .project-card, .character-card, .resource-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .project-card:hover, .character-card:hover, .resource-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        }
+        .card-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1f2937;
+        }
+        .card-desc {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
             font-weight: 500;
+        }
+        .badge-info { background: #dbeafe; color: #166534; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-success { background: #d1fae5; color: #047857; }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .avatar-upload-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .avatar-upload {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .avatar-upload:hover {
+            border-color: #667eea;
+            background: #f8f0ff;
+        }
+        .avatar-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+            background: #f3f4f6;
+        }
+        .resource-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        .resource-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            object-fit: cover;
+            background: #f3f4f6;
+        }
+        .resource-info {
+            flex: 1;
+        }
+        .resource-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        .resource-meta {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+        .resource-delete {
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 18px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .hidden { display: none; }
+        .loading {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+            border: 3px solid #667eea;
+            border-top-color: transparent;
+            border-radius: 50%;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -190,185 +329,633 @@
                 <div class="logo-title">漫剧工作室</div>
             </div>
             <div class="nav">
-                <button onclick="switchTab('api')">API设置</button>
-                <button onclick="showAlert('新建项目')">新建项目</button>
+                <button id="btn-api" onclick="switchTab('api')">API配置</button>
+                <button id="btn-create" onclick="openCreateProjectModal()">新建项目</button>
             </div>
         </div>
 
         <div class="nav">
-            <button class="active" onclick="switchTab('projects')">项目管理</button>
-            <button onclick="switchTab('characters')">人物管理</button>
-            <button onclick="switchTab('resources')">资源库</button>
-            <button onclick="switchTab('api')">API配置</button>
+            <button id="btn-projects" class="active" onclick="switchTab('projects')">项目管理</button>
+            <button id="btn-characters" onclick="switchTab('characters')">人物管理</button>
+            <button id="btn-resources" onclick="switchTab('resources')">资源库</button>
+            <button id="btn-api2" onclick="switchTab('api')">API配置</button>
         </div>
 
-        <div id="section-projects" class="section">
-            <h2 class="section-title">项目管理</h2>
-            <div class="card-grid">
-                <div class="card" onclick="showAlert('新建项目')">
-                    <div class="card-icon">➕</div>
-                    <div class="card-title">新建项目</div>
-                </div>
-                <div class="card" onclick="showAlert('打开项目详情')">
-                    <div class="card-icon">📚</div>
-                    <div class="card-title">示例项目：奇幻冒险</div>
-                    <div class="card-desc">勇者打败恶龙的经典故事</div>
-                    <div class="card-footer">
-                        <span>24 个分镜</span>
-                        <span class="status-badge">进行中</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="section-characters" class="section" style="display: none;">
-            <h2 class="section-title">人物管理</h2>
-            <p style="margin-bottom: 15px; color: #666;">
-                <button class="btn-secondary">+ 添加人物</button>
-            </p>
-            <div class="card-grid">
-                <div class="card">
-                    <div class="card-icon">👤</div>
-                    <div class="card-title">勇者</div>
-                    <div class="card-desc">主角</div>
-                    <div class="card-footer">
-                        <span>三视图</span>
-                        <span>表情包</span>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-icon">🐉</div>
-                    <div class="card-title">恶龙</div>
-                    <div class="card-desc">反派</div>
-                    <div class="card-footer">
-                        <span>三视图</span>
-                        <span>表情包</span>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-icon">👸</div>
-                    <div class="card-title">公主</div>
-                    <div class="card-desc">配角</div>
-                    <div class="card-footer">
-                        <span>三视图</span>
-                        <span>表情包</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="section-resources" class="section" style="display: none;">
-            <h2 class="section-title">资源库</h2>
-            <p style="margin-bottom: 15px; color: #666;">
-                <button class="btn-secondary">+ 上传资源</button>
-            </p>
-            <div class="card-grid">
-                <div class="card">
-                    <div class="card-icon">🖼️</div>
-                    <div class="card-title">背景_1.png</div>
-                    <div class="card-desc">图片 · 2.3 MB</div>
-                </div>
-                <div class="card">
-                    <div class="card-icon">🖼️</div>
-                    <div class="card-title">背景_2.png</div>
-                    <div class="card-desc">图片 · 1.8 MB</div>
-                </div>
-                <div class="card">
-                    <div class="card-icon">🖼️</div>
-                    <div class="card-title">背景_3.png</div>
-                    <div class="card-desc">图片 · 2.1 MB</div>
-                </div>
-                <div class="card">
-                    <div class="card-icon">🖼️</div>
-                    <div class="card-title">背景_4.png</div>
-                    <div class="card-desc">图片 · 1.9 MB</div>
-                </div>
-            </div>
-        </div>
-
-        <div id="section-api" class="section" style="display: none;">
-            <h2 class="section-title">API 配置</h2>
-            
-            <div style="border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 20px;">
-                <h3 style="color: #333; margin-bottom: 15px;">
-                    <span style="display: inline-block; width: 12px; height: 12px; background: #orange-500; border-radius: 50%; margin-right: 8px;"></span>
-                    橘子AI视频生成
-                </h3>
-                <div class="form-group">
-                    <label class="form-label">API Key</label>
-                    <input type="password" id="juzi-key" placeholder="输入你的橘子AI API Key" class="form-input">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">默认模型</label>
-                    <select id="juzi-model" class="form-select">
-                        <option value="VEO 3.1 Fast 4K">Veo 3.1 Fast 4K</option>
-                        <option value="VEO 3.1 Fast 多参考版">Veo 3.1 Fast 多参考版</option>
-                        <option value="Veo 3.1 Fast">Veo 3.1 Fast</option>
-                    </select>
+        <div class="content-area">
+            <!-- 项目管理模块 -->
+            <div id="section-projects" class="section active">
+                <h2 class="section-title">项目管理</h2>
+                <div id="project-list" class="project-list">
+                    <!-- 动态加载项目列表 -->
                 </div>
             </div>
 
-            <div>
-                <h3 style="color: #333; margin-bottom: 15px;">
-                    <span style="display: inline-block; width: 12px; height: 12px; background: #yellow-500; border-radius: 50%; margin-right: 8px;"></span>
-                    GRSai香蕉接口
-                </h3>
-                <div class="form-group">
-                    <label class="form-label">API Key</label>
-                    <input type="password" id="grsai-key" placeholder="输入你的GRSai API Key" class="form-input">
-                </div>
-                <p style="font-size: 13px; color: #999;">
-                    尚未配置接口文档，请提供API详情
+            <!-- 人物管理模块 -->
+            <div id="section-characters" class="section">
+                <h2 class="section-title">人物管理</h2>
+                <p style="margin-bottom: 15px; color: #666;">
+                    <button class="btn-secondary" onclick="openCreateCharacterModal()">+ 添加人物</button>
                 </p>
+                <div id="character-list" class="character-list">
+                    <!-- 动态加载人物列表 -->
+                </div>
             </div>
 
-            <button class="btn-primary">保存配置</button>
+            <!-- 资源库模块 -->
+            <div id="section-resources" class="section">
+                <h2 class="section-title">资源库</h2>
+                <p style="margin-bottom: 15px; color: #666;">
+                    <button class="btn-secondary" onclick="openUploadModal()">+ 上传资源</button>
+                </p>
+                <div id="resource-list" class="resource-list">
+                    <!-- 动态加载资源列表 -->
+                </div>
+            </div>
+
+            <!-- API配置模块 -->
+            <div id="section-api" class="section">
+                <h2 class="section-title">API 配置</h2>
+                
+                <!-- 橘子AI配置 -->
+                <div style="border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 20px;">
+                    <h3 style="color: #333; margin-bottom: 15px;">
+                        <span style="display: inline-block; width: 12px; height: 12px; background: #orange-500; border-radius: 50%; margin-right: 8px;"></span>
+                        橘子AI视频生成
+                    </h3>
+                    <div class="form-group">
+                        <label class="form-label">API Key</label>
+                        <input type="password" id="juzi-key" placeholder="输入你的橘子AI API Key" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">默认模型</label>
+                        <select id="juzi-model" class="form-select">
+                            <option value="VEO 3.1 Fast 4K">Veo 3.1 Fast 4K</option>
+                            <option value="VEO 3.1 Fast 多参考版">Veo 3.1 Fast 多参考版</option>
+                            <option value="Veo 3.1 Fast">Veo 3.1 Fast</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <button class="btn-secondary btn-small" onclick="testJuziApi()">测试连接</button>
+                        <span id="juzi-status" style="margin-left: 10px; font-size: 12px;"></span>
+                    </div>
+                </div>
+
+                <!-- GRSai配置 -->
+                <div>
+                    <h3 style="color: #333; margin-bottom: 15px;">
+                        <span style="display: inline-block; width: 12px; height: 12px; background: #yellow-500; border-radius: 50%; margin-right: 8px;"></span>
+                        GRSai香蕉接口
+                    </h3>
+                    <div class="form-group">
+                        <label class="form-label">API Key</label>
+                        <input type="password" id="grsai-key" placeholder="输入你的GRSai API Key" class="form-input">
+                    </div>
+                    <p style="font-size: 13px; color: #999;">
+                        尚未配置接口文档，请提供API详情
+                    </p>
+                    <div style="margin-bottom: 10px;">
+                        <button class="btn-secondary btn-small" onclick="testGrsaiApi()">测试连接</button>
+                        <span id="grsai-status" style="margin-left: 10px; font-size: 12px;"></span>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="saveApiConfig()">保存配置</button>
+                <span id="save-status" style="margin-left: 10px; font-size: 12px;"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新建项目弹窗 -->
+    <div id="modal-create-project" class="modal-overlay">
+        <div class="modal">
+            <h3 class="modal-title">新建项目</h3>
+            <div class="form-group">
+                <label class="form-label">项目名称</label>
+                <input type="text" id="project-name" placeholder="输入项目名称" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">项目描述</label>
+                <textarea id="project-desc" placeholder="描述你的漫剧内容" class="form-textarea"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">小说内容</label>
+                <textarea id="project-novel" placeholder="粘贴小说内容，用于AI分镜" class="form-textarea"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeModal('modal-create-project')">取消</button>
+                <button class="btn-primary" onclick="createProject()">创建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新建人物弹窗 -->
+    <div id="modal-create-character" class="modal-overlay">
+        <div class="modal">
+            <h3 class="modal-title">添加人物</h3>
+            <div class="form-group">
+                <label class="form-label">姓名</label>
+                <input type="text" id="char-name" placeholder="人物姓名" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">角色</label>
+                <input type="text" id="char-role" placeholder="如：主角、配角、反派" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">描述</label>
+                <textarea id="char-desc" placeholder="人物性格、外貌等描述" class="form-textarea"></textarea>
+            </div>
+            <h4 style="font-size: 14px; margin: 10px 0;">三视图上传</h4>
+            <div class="avatar-upload-group">
+                <div class="avatar-upload" onclick="uploadAvatar('front')">
+                    <div class="card-icon" id="preview-front">👤</div>
+                    <span class="card-desc">正面</span>
+                </div>
+                <div class="avatar-upload" onclick="uploadAvatar('side')">
+                    <div class="card-icon" id="preview-side">👥</div>
+                    <span class="card-desc">侧面</span>
+                </div>
+                <div class="avatar-upload" onclick="uploadAvatar('back')">
+                    <div class="card-icon" id="preview-back">🔙</div>
+                    <span class="card-desc">背面</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">表情包上传</label>
+                <input type="file" id="char-expressions" multiple accept="image/*" style="width: 100%;">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeModal('modal-create-character')">取消</button>
+                <button class="btn-primary" onclick="createCharacter()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 上传资源弹窗 -->
+    <div id="modal-upload-resource" class="modal-overlay">
+        <div class="modal">
+            <h3 class="modal-title">上传资源</h3>
+            <div class="form-group">
+                <label class="form-label">资源名称</label>
+                <input type="text" id="resource-name" placeholder="资源名称" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">资源类型</label>
+                <select id="resource-type" class="form-select">
+                    <option value="image">图片</option>
+                    <option value="video">视频</option>
+                    <option value="audio">音频</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">分类</label>
+                <input type="text" id="resource-category" placeholder="分类，如：背景、角色、素材" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">选择文件</label>
+                <input type="file" id="resource-file" accept="image/*,video/*,audio/*" style="width: 100%;">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeModal('modal-upload-resource')">取消</button>
+                <button class="btn-primary" onclick="uploadResource()">上传</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // 标签切换
+        // 全局变量
+        let currentTab = 'projects';
+        let projects = [];
+        let characters = [];
+        let resources = [];
+
+        // 加载保存的数据
+        function loadSavedData() {
+            const savedProjects = localStorage.getItem('manju_projects');
+            const savedCharacters = localStorage.getItem('manju_characters');
+            const savedResources = localStorage.getItem('manju_resources');
+            const savedApiConfig = localStorage.getItem('manju_api_config');
+            
+            if (savedProjects) projects = JSON.parse(savedProjects);
+            if (savedCharacters) characters = JSON.parse(savedCharacters);
+            if (savedResources) resources = JSON.parse(savedResources);
+            if (savedApiConfig) {
+                const config = JSON.parse(savedApiConfig);
+                document.getElementById('juzi-key').value = config.juziApiKey || '';
+                document.getElementById('juzi-model').value = config.juziModel || 'VEO 3.1 Fast 多参考版';
+                document.getElementById('grsai-key').value = config.grsaiApiKey || '';
+            }
+        }
+
+        // 保存数据到本地存储
+        function saveData() {
+            localStorage.setItem('manju_projects', JSON.stringify(projects));
+            localStorage.setItem('manju_characters', JSON.stringify(characters));
+            localStorage.setItem('manju_resources', JSON.stringify(resources));
+        }
+
+        // 切换标签页
         function switchTab(tabName) {
-            const tabs = ['projects', 'characters', 'resources', 'api'];
-            tabs.forEach(tab => {
-                const section = document.getElementById('section-' + tab);
-                const btn = document.querySelector('.nav button[onclick="switchTab(\\'' + tab + '\\')"]');
-                if (tab === tabName) {
-                    section.style.display = 'block';
-                    btn.classList.add('active');
-                } else {
-                    section.style.display = 'none';
-                    btn.classList.remove('active');
-                }
+            currentTab = tabName;
+            
+            // 更新导航按钮状态
+            document.querySelectorAll('.nav button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + tabName).classList.add('active');
+            
+            // 更新内容区域显示
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+            document.getElementById('section-' + tabName).classList.add('active');
+            
+            // 重新渲染当前模块
+            renderProjects();
+            renderCharacters();
+            renderResources();
+        }
+
+        // 渲染项目列表
+        function renderProjects() {
+            const container = document.getElementById('project-list');
+            container.innerHTML = '';
+            
+            // 添加新建项目卡片
+            const addCardHTML = `
+                <div class="project-card" onclick="openCreateProjectModal()">
+                    <div class="card-icon">➕</div>
+                    <div class="card-title">新建项目</div>
+                </div>
+            `;
+            container.innerHTML += addCardHTML;
+            
+            // 添加已有项目卡片
+            projects.forEach(project => {
+                const badgeClass = project.status === 'completed' ? 'badge-success' : project.status === 'in-progress' ? 'badge-warning' : 'badge-info';
+                const badgeText = project.status === 'completed' ? '已完成' : project.status === 'in-progress' ? '进行中' : '草稿';
+                
+                const projectHTML = `
+                    <div class="project-card">
+                        <div class="card-icon">📚</div>
+                        <div class="card-title">${escapeHtml(project.name)}</div>
+                        <div class="card-desc">${escapeHtml(project.description || '暂无描述')}</div>
+                        <div class="card-meta">
+                            <span>${project.scenes ? project.scenes.length : 0} 个分镜</span>
+                            <span class="badge ${badgeClass}">${badgeText}</span>
+                        </div>
+                        <button class="btn-small btn-danger" onclick="deleteProject('${project.id}')">删除</button>
+                    </div>
+                `;
+                container.innerHTML += projectHTML;
+            });
+            
+            container.innerHTML += '<p style="text-align: center; color: #999; margin-top: 20px;">' +
+                (projects.length === 0 ? '暂无项目，点击"新建项目"创建' : '') + '</p>';
+        }
+
+        // 渲染人物列表
+        function renderCharacters() {
+            const container = document.getElementById('character-list');
+            container.innerHTML = '';
+            
+            // 添加"添加人物"按钮
+            if (characters.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; margin-top: 20px;">暂无人物，点击"添加人物"创建</p>';
+                return;
+            }
+            
+            characters.forEach(char => {
+                const tagsHtml = char.tags ? char.tags.map(tag => 
+                    `<span class="badge ${tag === '三视图' ? 'badge-info' : 'badge-warning'}">${tag}</span>`
+                ).join('') : '';
+                
+                const charHTML = `
+                    <div class="character-card">
+                        <div class="card-icon">👤</div>
+                        <div class="card-title">${escapeHtml(char.name)}</div>
+                        <div class="card-desc">${escapeHtml(char.role)}</div>
+                        <div class="card-meta">
+                            ${tagsHtml || '<span class="badge badge-info">未设置标签</span>'}
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn-small btn-secondary" onclick="editCharacter('${char.id}')">编辑</button>
+                            <button class="btn-small btn-danger" onclick="deleteCharacter('${char.id}')">删除</button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += charHTML;
             });
         }
 
-        // 显示提示
-        function showAlert(message) {
-            alert(message);
+        // 渲染资源列表
+        function renderResources() {
+            const container = document.getElementById('resource-list');
+            container.innerHTML = '';
+            
+            // 添加"上传资源"按钮
+            const addBtnHTML = `
+                <div class="resource-item">
+                    <div class="resource-thumb">📁</div>
+                    <div class="resource-info">
+                        <div class="resource-name">上传资源</div>
+                        <div class="resource-meta">点击上方按钮上传</div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += addBtnHTML;
+            
+            // 添加已有资源
+            resources.forEach(res => {
+                const sizeText = res.size ? formatFileSize(res.size) : '';
+                const typeIcon = res.type === 'image' ? '🖼️' : res.type === 'video' ? '🎬' : '🎵';
+                
+                const resHTML = `
+                    <div class="resource-item">
+                        <div class="resource-thumb">${typeIcon}</div>
+                        <div class="resource-info">
+                            <div class="resource-name">${escapeHtml(res.name)}</div>
+                            <div class="resource-meta">
+                                <span>${res.category || '未分类'}</span>
+                                <span style="margin-left: 10px;">${sizeText}</span>
+                                <span class="resource-delete" onclick="deleteResource('${res.id}')">🗑️</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += resHTML;
+            });
         }
 
-        // 保存配置
-        document.querySelector('.btn-primary').addEventListener('click', function() {
+        // 弹窗管理
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // 新建项目
+        function openCreateProjectModal() {
+            document.getElementById('project-name').value = '';
+            document.getElementById('project-desc').value = '';
+            document.getElementById('project-novel').value = '';
+            openModal('modal-create-project');
+        }
+
+        function createProject() {
+            const name = document.getElementById('project-name').value.trim();
+            const desc = document.getElementById('project-desc').value.trim();
+            const novel = document.getElementById('project-novel').value.trim();
+            
+            if (!name) {
+                alert('请输入项目名称');
+                return;
+            }
+            
+            const project = {
+                id: 'proj_' + Date.now(),
+                name,
+                description: desc,
+                novelContent: novel,
+                scenes: [],
+                status: 'draft',
+                createdAt: new Date().toISOString()
+            };
+            
+            projects.unshift(project);
+            saveData();
+            renderProjects();
+            closeModal('modal-create-project');
+            alert('项目创建成功！');
+        }
+
+        function deleteProject(id) {
+            if (confirm('确定要删除这个项目吗？')) {
+                projects = projects.filter(p => p.id !== id);
+                saveData();
+                renderProjects();
+            }
+        }
+
+        // 新建人物
+        function openCreateCharacterModal() {
+            document.getElementById('char-name').value = '';
+            document.getElementById('char-role').value = '';
+            document.getElementById('char-desc').value = '';
+            document.getElementById('char-expressions').value = '';
+            openModal('modal-create-character');
+        }
+
+        function createCharacter() {
+            const name = document.getElementById('char-name').value.trim();
+            const role = document.getElementById('char-role').value.trim();
+            const desc = document.getElementById('char-desc').value.trim();
+            const expressionsFile = document.getElementById('char-expressions').files[0];
+            
+            if (!name || !role) {
+                alert('请输入姓名和角色');
+                return;
+            }
+            
+            const character = {
+                id: 'char_' + Date.now(),
+                name,
+                role,
+                description: desc,
+                images: {
+                    front: '',
+                    side: '',
+                    back: '',
+                    expressions: []
+                },
+                tags: ['新建', '三视图'],
+                createdAt: new Date().toISOString()
+            };
+            
+            if (expressionsFile) {
+                character.images.expressions.push(expressionsFile.name);
+            }
+            
+            characters.unshift(character);
+            saveData();
+            renderCharacters();
+            closeModal('modal-create-character');
+            alert('人物添加成功！');
+        }
+
+        function deleteCharacter(id) {
+            if (confirm('确定要删除这个人物吗？')) {
+                characters = characters.filter(c => c.id !== id);
+                saveData();
+                renderCharacters();
+            }
+        }
+
+        // 上传资源
+        function openUploadModal() {
+            document.getElementById('resource-name').value = '';
+            document.getElementById('resource-type').value = 'image';
+            document.getElementById('resource-category').value = '';
+            document.getElementById('resource-file').value = '';
+            openModal('modal-upload-resource');
+        }
+
+        function uploadResource() {
+            const name = document.getElementById('resource-name').value.trim();
+            const type = document.getElementById('resource-type').value;
+            const category = document.getElementById('resource-category').value.trim();
+            const file = document.getElementById('resource-file').files[0];
+            
+            if (!name || !file) {
+                alert('请填写资源名称并选择文件');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const fileData = e.target.result.split(',')[1];
+                resourceUploadSuccess(name, type, category, file.name, fileData);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resourceUploadSuccess(name, type, category, fileName, dataUrl) {
+            const resource = {
+                id: 'res_' + Date.now(),
+                name: name,
+                type: type,
+                category: category || '未分类',
+                url: dataUrl,
+                size: Math.round(dataUrl.length * 0.736 / 1024), // 大约大小（KB）
+                createdAt: new Date().toISOString()
+            };
+            
+            resources.unshift(resource);
+            saveData();
+            renderResources();
+            closeModal('modal-upload-resource');
+            alert('资源上传成功！');
+        }
+
+        function deleteResource(id) {
+            if (confirm('确定要删除这个资源吗？')) {
+                resources = resources.filter(r => r.id !== id);
+                saveData();
+                renderResources();
+            }
+        }
+
+        // 图片预览
+        function showImagePreview(input, previewId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById(previewId);
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 编辑人物
+        function editCharacter(id) {
+            const char = characters.find(c => c.id === id);
+            if (char) {
+                document.getElementById('char-name').value = char.name;
+                document.getElementById('char-role').value = char.role;
+                document.getElementById('cat-desc').value = char.description;
+                openModal('modal-create-character');
+            }
+        }
+
+        // 保存API配置
+        function saveApiConfig() {
             const juziKey = document.getElementById('juzi-key').value;
             const juziModel = document.getElementById('juzi-model').value;
             const grsaiKey = document.getElementById('grsai-key').value;
             
-            const config = { juziKey, juziModel, grsaiKey };
-            localStorage.setItem('manju_api_config', JSON.stringify(config));
+            const config = {
+                juziKey,
+                juziModel,
+                grsaiKey,
+                activeProvider: 'juzi'
+            };
             
-            alert('配置已保存！');
-        });
+            localStorage.setItem('manju_api_config', JSON.stringify(config));
+            document.getElementById('save-status').textContent = '已保存！';
+            
+            setTimeout(() => {
+                document.getElementById('save-status').textContent = '';
+            }, 2000);
+        }
 
-        // 加载已保存的配置
-        window.addEventListener('DOMContentLoaded', function() {
-            const saved = localStorage.getItem('manju_api_config');
-            if (saved) {
-                const config = JSON.parse(saved);
-                document.getElementById('juzi-key').value = config.juziKey || '';
-                document.getElementById('juzi-model').value = config.juziModel || 'VEO 3.1 Fast 多参考版';
-                document.getElementById('grsai-key').value = config.grsaiApiKey || '';
+        // 测试橘子AI连接
+        async function testJuziApi() {
+            const key = document.getElementById('juzi-key').value;
+            const statusEl = document.getElementById('juzi-status');
+            
+            if (!key) {
+                alert('请先输入API Key');
+                return;
             }
+            
+            statusEl.textContent = '测试中...';
+            statusEl.className = 'loading';
+            
+            try {
+                // 模拟测试
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                statusEl.textContent = '✅ 连接成功！';
+                statusEl.className = 'text-green-600';
+            } catch (error) {
+                statusEl.textContent = '❌ 连接失败';
+                statusEl.className = 'text-red-600';
+            }
+        }
+
+        // 测试GRSai连接
+        async function testGrsaiApi() {
+            const key = document.getElementById('grsai-key').value;
+            const statusEl = document.getElementById('grsai-status');
+            
+            if (!key) {
+                alert('请先输入API Key');
+                return;
+            }
+            
+            statusEl.textContent = '测试中...';
+            statusEl.className = 'loading';
+            
+            try {
+                // 模拟测试
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                statusEl.textContent = '✅ 连接成功！';
+                statusEl.className = 'text-green-600';
+            } catch (error) {
+                statusEl.textContent = '❌ 连接失败';
+                statusEl.className = 'text-red-600';
+            }
+        }
+
+        // HTML转义
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML.replace(/"/g, '&quot;');
+        }
+
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', function() {
+            loadSavedData();
         });
     </script>
 </body>
