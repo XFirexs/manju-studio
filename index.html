@@ -410,28 +410,6 @@
             background: rgba(34, 197, 94, 0.3);
         }
         
-        .btn-cancel {
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #ef4444;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .btn-cancel:hover {
-            background: rgba(239, 68, 68, 0.3);
-        }
-        .btn-cancel:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-        
         /* 进度条 */
         .progress-bar {
             width: 100%;
@@ -663,8 +641,6 @@
         let currentUploadSceneId = null;
         let currentUploadRefIndex = null;
         let currentVideoRefIndex = null;
-        let pollIntervals = {}; // 存储所有分镜的轮询定时器，key为sceneId
-        let currentPollSceneId = null; // 当前正在轮询的场景ID
         
         // 初始化
         window.addEventListener('DOMContentLoaded', function() {
@@ -771,14 +747,9 @@
                                 }
                             </div>
                             <div class="progress-bar" id="${scene.id}_progress"></div>
-                            <div style="display: flex; gap: 8px; align-items: center;">
-                                <button class="btn-gen-image" id="${scene.id}_btn-gen" onclick="generateImage('${scene.id}')">
-                                    <span>🎨</span><span id="${scene.id}_btn-text">生成图片</span>
-                                </button>
-                                <button class="btn-cancel" id="${scene.id}_btn-cancel" onclick="cancelImageGeneration('${sceneId}')">
-                                    <span>✕</span><span>取消</span>
-                                </button>
-                            </div>
+                            <button class="btn-gen-image" id="${scene.id}_btn-gen" onclick="generateImage('${scene.id}')">
+                                <span>🎨</span><span id="${scene.id}_btn-text">生成图片</span>
+                            </button>
                             ${scene.generatedImage ? `
                                 <div class="action-buttons">
                                     <button class="btn-small btn-download" onclick="downloadImage('${scene.id}')">下载</button>
@@ -946,12 +917,6 @@
             progressBar.classList.add('active');
             progressBar.innerHTML = '<div class="progress-fill" style="width: 0%"></div>';
             
-            // 显示取消按钮
-            const cancelBtn = document.getElementById(sceneId + '_btn-cancel');
-            if (cancelBtn) {
-                cancelBtn.style.display = 'flex';
-            }
-            
             scene.progress = 0;
             
             try {
@@ -981,8 +946,6 @@
                 console.log('API响应:', data);
                 
                 if (data.code === 0 && data.data && data.data.id) {
-                    // 保存轮询定时器引用，支持取消
-                    currentPollSceneId = sceneId;
                     await pollImageResult(sceneId, data.data.id, scene);
                 } else {
                     throw new Error(data.msg || '生成失败');
@@ -994,19 +957,23 @@
             }
         }
         
-        // 轮询图片结果 - 修复轮询逻辑
+        // 轮询图片结果
         async function pollImageResult(sceneId, taskId, scene) {
             const apiKey = document.getElementById('grsai-key').value;
-            const maxAttempts = 120; // 增加到120次
+            const maxAttempts = 60;
             let attempts = 0;
             
-            console.log('开始轮询任务:', taskId);
-            console.log('API Key长度:', apiKey ? apiKey.length : 0);
-            
-            // 保存轮询定时器到全局变量，支持随时取消
-            pollIntervals[sceneId] = setInterval(async () => {
+            const pollInterval = setInterval(async () => {
+                attempts++;
+                
+                if (attempts > maxAttempts) {
+                    clearInterval(pollInterval);
+                    alert('生成超时，请重试');
+                    resetGenerateButton(sceneId);
+                    return;
+                }
+                
                 try {
-                    
                     const response = await fetch(`${CONFIG.grsai.baseUrl}/v1/draw/result`, {
                         method: 'POST',
                         headers: {
@@ -1016,20 +983,15 @@
                         body: JSON.stringify({ id: taskId })
                     });
                     
-                    console.log('result接口响应状态:', response.status);
-                    
                     if (!response.ok) {
-                        console.error('result接口HTTP错误:', response.status);
-                        throw new Error('轮询失败: HTTP ' + response.status);
+                        throw new Error('轮询失败: ' + response.status);
                     }
                     
                     const data = await response.json();
-                    console.log('result接口响应JSON:', JSON.stringify(data));
+                    console.log('轮询响应:', data);
                     
                     if (data.code === 0 && data.data) {
                         const { progress, status, results } = data.data;
-                        
-                        console.log(`轮询结果: progress=${progress}, status=${status}, results数量=${results ? results.length : 0}`);
                         
                         scene.progress = progress;
                         const progressBar = document.getElementById(sceneId + '_progress');
@@ -1040,8 +1002,6 @@
                         if (status === 'succeeded' && results && results.length > 0) {
                             clearInterval(pollInterval);
                             
-                            console.log('轮询成功！图片URL:', results[0].url);
-                            
                             scene.generatedImage = results[0].url;
                             scene.progress = 100;
                             
@@ -1050,42 +1010,26 @@
                             
                             refreshSceneRow(sceneId);
                             
-                            alert('✅ 图片生成成功！已自动添加到视频参考图1');
+                            alert('图片生成成功！已自动添加到视频参考图1');
                         } else if (status === 'failed') {
                             clearInterval(pollInterval);
-                            console.error('生成失败:', data.data.failure_reason);
                             alert('生成失败：' + (data.data.failure_reason || '未知错误'));
                             resetGenerateButton(sceneId);
-                        } else {
-                            console.warn('未知状态:', status, '完整响应:', JSON.stringify(data));
                         }
-                    } else {
-                        console.error('API返回错误码:', data.code, '消息:', data.msg);
-                        clearInterval(pollInterval);
-                        alert('API返回错误：' + (data.msg || '未知错误'));
-                        resetGenerateButton(sceneId);
                     }
                 } catch (error) {
-                    console.error('轮询异常错误:', error);
-                    clearInterval(pollInterval);
-                    console.error('完整错误信息:', error);
-                    alert('轮询异常：' + error.message);
-                    resetGenerateButton(sceneId);
+                    console.error('轮询错误:', error);
                 }
-            }, 500); // 改为500ms，加快轮询频率
+            }, 1000);
         }
         
         function resetGenerateButton(sceneId) {
             const btn = document.getElementById(sceneId + '_btn-gen');
-            const cancelBtn = document.getElementById(sceneId + '_btn-cancel');
             const progressBar = document.getElementById(sceneId + '_progress');
             
             if (btn) {
                 btn.disabled = false;
                 btn.innerHTML = '<span>🎨</span><span id="' + sceneId + '_btn-text">生成图片</span>';
-            }
-            if (cancelBtn) {
-                cancelBtn.style.display = 'none';
             }
             if (progressBar) {
                 progressBar.classList.remove('active');
@@ -1275,37 +1219,6 @@
             localStorage.setItem('manju_api_config', JSON.stringify(config));
             closeApiModal();
             alert('API配置已保存');
-        }
-        
-        // 取消图片生成
-        function cancelImageGeneration(sceneId) {
-            // 停止轮询
-            if (pollIntervals[sceneId]) {
-                clearInterval(pollIntervals[sceneId]);
-                delete pollIntervals[sceneId];
-            }
-            
-            // 重置按钮状态
-            const btn = document.getElementById(sceneId + '_btn-gen');
-            const cancelBtn = document.getElementById(sceneId + '_btn-cancel');
-            const btnText = document.getElementById(sceneId + '_btn-text');
-            const progressBar = document.getElementById(sceneId + '_progress');
-            
-            if (btn) {
-                btn.disabled = false;
-                if (btnText) {
-                    btnText.textContent = '生成图片';
-                }
-            }
-            if (cancelBtn) {
-                cancelBtn.style.display = 'none';
-            }
-            if (progressBar) {
-                progressBar.classList.remove('active');
-            }
-            
-            console.log('已取消生成任务:', sceneId);
-            alert('已取消生成任务，可以重新生成');
         }
         
         // 点击预览弹窗外部关闭
