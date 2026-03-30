@@ -957,23 +957,31 @@
             }
         }
         
-        // 轮询图片结果
+        // 轮询图片结果 - 修复轮询逻辑
         async function pollImageResult(sceneId, taskId, scene) {
             const apiKey = document.getElementById('grsai-key').value;
-            const maxAttempts = 60;
+            const maxAttempts = 120; // 增加到120次
             let attempts = 0;
+            
+            console.log('开始轮询任务:', taskId);
+            console.log('API Key长度:', apiKey ? apiKey.length : 0);
             
             const pollInterval = setInterval(async () => {
                 attempts++;
                 
+                console.log(`轮询第${attempts}次...`);
+                
                 if (attempts > maxAttempts) {
                     clearInterval(pollInterval);
-                    alert('生成超时，请重试');
+                    console.error('轮询超时');
+                    alert('轮询超时，请检查浏览器控制台日志');
                     resetGenerateButton(sceneId);
                     return;
                 }
                 
                 try {
+                    console.log(`正在请求result接口，URL: ${CONFIG.grsai.baseUrl}/v1/draw/result`);
+                    
                     const response = await fetch(`${CONFIG.grsai.baseUrl}/v1/draw/result`, {
                         method: 'POST',
                         headers: {
@@ -983,15 +991,20 @@
                         body: JSON.stringify({ id: taskId })
                     });
                     
+                    console.log('result接口响应状态:', response.status);
+                    
                     if (!response.ok) {
-                        throw new Error('轮询失败: ' + response.status);
+                        console.error('result接口HTTP错误:', response.status);
+                        throw new Error('轮询失败: HTTP ' + response.status);
                     }
                     
                     const data = await response.json();
-                    console.log('轮询响应:', data);
+                    console.log('result接口响应JSON:', JSON.stringify(data));
                     
                     if (data.code === 0 && data.data) {
                         const { progress, status, results } = data.data;
+                        
+                        console.log(`轮询结果: progress=${progress}, status=${status}, results数量=${results ? results.length : 0}`);
                         
                         scene.progress = progress;
                         const progressBar = document.getElementById(sceneId + '_progress');
@@ -1002,6 +1015,8 @@
                         if (status === 'succeeded' && results && results.length > 0) {
                             clearInterval(pollInterval);
                             
+                            console.log('轮询成功！图片URL:', results[0].url);
+                            
                             scene.generatedImage = results[0].url;
                             scene.progress = 100;
                             
@@ -1010,17 +1025,29 @@
                             
                             refreshSceneRow(sceneId);
                             
-                            alert('图片生成成功！已自动添加到视频参考图1');
+                            alert('✅ 图片生成成功！已自动添加到视频参考图1');
                         } else if (status === 'failed') {
                             clearInterval(pollInterval);
+                            console.error('生成失败:', data.data.failure_reason);
                             alert('生成失败：' + (data.data.failure_reason || '未知错误'));
                             resetGenerateButton(sceneId);
+                        } else {
+                            console.warn('未知状态:', status, '完整响应:', JSON.stringify(data));
                         }
+                    } else {
+                        console.error('API返回错误码:', data.code, '消息:', data.msg);
+                        clearInterval(pollInterval);
+                        alert('API返回错误：' + (data.msg || '未知错误'));
+                        resetGenerateButton(sceneId);
                     }
                 } catch (error) {
-                    console.error('轮询错误:', error);
+                    console.error('轮询异常错误:', error);
+                    clearInterval(pollInterval);
+                    console.error('完整错误信息:', error);
+                    alert('轮询异常：' + error.message);
+                    resetGenerateButton(sceneId);
                 }
-            }, 1000);
+            }, 500); // 改为500ms，加快轮询频率
         }
         
         function resetGenerateButton(sceneId) {
