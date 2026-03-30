@@ -61,7 +61,7 @@
         
         /* 主容器 */
         .main-container {
-            max-width: 1600px;
+            max-width: 1900px;
             margin: 20px auto;
             padding: 0 20px;
         }
@@ -146,10 +146,10 @@
             cursor: pointer;
         }
         
-        /* 5列网格布局 */
+        /* 6列网格布局 */
         .scene-grid {
             display: grid;
-            grid-template-columns: 200px 180px 280px 200px 280px;
+            grid-template-columns: 200px 180px 280px 240px 200px 280px;
             gap: 15px;
             align-items: start;
         }
@@ -243,12 +243,64 @@
             border-radius: 3px;
         }
         
+        /* 3个视频参考图 */
+        .video-ref-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .video-ref-slot {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .video-ref-slot:hover {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+        .video-ref-slot.has-image {
+            border-style: solid;
+            border-color: #22c55e;
+        }
+        .video-ref-slot.has-generated-image {
+            border-style: solid;
+            border-color: #667eea;
+        }
+        .video-ref-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .video-ref-slot .upload-icon {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        .video-ref-number {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
         /* 图片生成框 */
         .image-gen-box {
             background: rgba(0, 0, 0, 0.3);
             border: 2px dashed rgba(255, 255, 255, 0.2);
             border-radius: 8px;
-            min-height: 200px;
+            min-height: 180px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -263,7 +315,7 @@
         }
         .image-preview {
             width: 100%;
-            max-height: 180px;
+            max-height: 160px;
             object-fit: contain;
             border-radius: 6px;
             cursor: pointer;
@@ -333,23 +385,25 @@
             background: rgba(0, 0, 0, 0.3);
             border: 2px dashed rgba(255, 255, 255, 0.2);
             border-radius: 8px;
-            min-height: 200px;
+            min-height: 180px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 10px;
             position: relative;
+            padding: 10px;
         }
         .video-gen-box.has-video {
             border-style: solid;
-            border-color: #667eea;
+            border-color: #f59e0b;
         }
         .video-preview {
             width: 100%;
-            max-height: 180px;
+            max-height: 160px;
             object-fit: contain;
             border-radius: 6px;
+            cursor: pointer;
         }
         .btn-gen-video {
             background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
@@ -457,9 +511,9 @@
         }
         
         /* 响应式 */
-        @media (max-width: 1200px) {
+        @media (max-width: 1400px) {
             .scene-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr);
                 gap: 10px;
             }
         }
@@ -468,7 +522,7 @@
             .scene-grid {
                 grid-template-columns: 1fr;
             }
-            .ref-grid {
+            .ref-grid, .video-ref-grid {
                 grid-template-columns: repeat(4, 1fr);
             }
             .header {
@@ -581,15 +635,17 @@
         </div>
     </div>
     
-    <!-- 隐藏的文件输入 - 每个分镜一个独立的输入 -->
+    <!-- 隐藏的文件输入 -->
     <input type="file" id="ref-image-input" class="hidden-input" accept="image/*" multiple onchange="handleRefImageUpload(event)">
+    <input type="file" id="video-ref-input" class="hidden-input" accept="image/*" multiple onchange="handleVideoRefUpload(event)">
 
     <script>
         // 配置
         const CONFIG = {
             grsai: { baseUrl: 'https://grsai.dakka.com.cn' },
             juzi: { baseUrl: 'http://juziaigc.com/open/api/video' },
-            maxRefImages: 7
+            maxRefImages: 7,
+            maxVideoRefImages: 3
         };
         
         // 全局状态
@@ -597,12 +653,12 @@
         let sceneCounter = 0;
         let currentUploadSceneId = null;
         let currentUploadRefIndex = null;
+        let currentVideoRefIndex = null;
         
         // 初始化
         window.addEventListener('DOMContentLoaded', function() {
             loadAllData();
             
-            // 如果没有数据，添加一个示例分镜
             if (scenes.length === 0) {
                 addSceneRow();
             }
@@ -618,9 +674,10 @@
                 number: sceneCounter,
                 novel: '',
                 imagePrompt: '',
-                referenceImages: new Array(7).fill(null), // 7个参考图位置
+                referenceImages: new Array(7).fill(null),
                 generatedImage: null,
                 videoPrompt: '',
+                videoRefImages: new Array(3).fill(null),
                 generatedVideo: null,
                 progress: 0,
                 status: ''
@@ -652,6 +709,25 @@
                 `;
             }
             
+            // 生成3个视频参考图槽位HTML
+            let videoRefSlotsHtml = '';
+            for (let i = 0; i < 3; i++) {
+                const hasImage = scene.videoRefImages[i] !== null;
+                const isGeneratedImage = i === 0 && scene.generatedImage && scene.videoRefImages[0] === scene.generatedImage;
+                
+                videoRefSlotsHtml += `
+                    <div class="video-ref-slot ${hasImage ? 'has-image' : ''} ${isGeneratedImage ? 'has-generated-image' : ''}" 
+                         onclick="uploadVideoRefImage('${scene.id}', ${i})"
+                         id="${scene.id}_video_ref_${i}">
+                        ${hasImage ? 
+                            `<img src="${scene.videoRefImages[i]}">` : 
+                            `<span class="upload-icon">+</span>`
+                        }
+                        <span class="video-ref-number">${i + 1}</span>
+                    </div>
+                `;
+            }
+            
             const rowHtml = `
                 <div class="scene-row" id="${scene.id}">
                     <div class="scene-header">
@@ -673,7 +749,7 @@
                                       oninput="updateSceneData('${scene.id}', 'imagePrompt', this.value)">${scene.imagePrompt}</textarea>
                         </div>
                         
-                        <!-- 3. 7个参考图 -->
+                        <!-- 3. 7个参考图（用于生图） -->
                         <div class="reference-area">
                             <div class="input-label">3. 参考图（7张）</div>
                             <div class="ref-grid">
@@ -681,7 +757,7 @@
                             </div>
                         </div>
                         
-                        <!-- 4. 生图框 -->
+                        <!-- 4. 生成图片 -->
                         <div class="image-gen-box ${scene.generatedImage ? 'has-image' : ''}" id="${scene.id}_image-box">
                             ${scene.generatedImage ? 
                                 `<img src="${scene.generatedImage}" class="image-preview" onclick="previewImage('${scene.generatedImage}')" alt="生成的图片">
@@ -705,13 +781,30 @@
                                       oninput="updateSceneData('${scene.id}', 'videoPrompt', this.value)">${scene.videoPrompt}</textarea>
                             <button class="btn-regen-prompt" onclick="regenerateVideoPrompt('${scene.id}')">✨ 智能生成提示词</button>
                         </div>
+                        
+                        <!-- 6. 视频生成（含3个参考图） -->
+                        <div class="video-gen-box ${scene.generatedVideo ? 'has-video' : ''}" id="${scene.id}_video-box">
+                            ${scene.generatedVideo ? 
+                                `<img src="${scene.generatedVideo}" class="video-preview" onclick="previewImage('${scene.generatedVideo}')" alt="生成的视频">` :
+                                `<div style="color: rgba(255, 255, 255, 0.4); font-size: 12px;">上传3个参考图后生成视频</div>`
+                            }
+                            
+                            <!-- 3个视频参考图 -->
+                            <div class="video-ref-grid" style="width: 100%; margin-bottom: 10px;">
+                                ${videoRefSlotsHtml}
+                            </div>
+                            
+                            <button class="btn-gen-video" id="${scene.id}_btn-gen-video" onclick="generateVideo('${scene.id}')" 
+                                    ${!scene.videoRefImages.some(img => img !== null) ? 'disabled' : ''}>
+                                <span>🎬</span><span id="${scene.id}_video-btn-text">生成视频</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
             
             container.insertAdjacentHTML('beforeend', rowHtml);
             
-            // 恢复进度条状态
             if (scene.progress > 0 && scene.progress < 100) {
                 const progressBar = document.getElementById(scene.id + '_progress');
                 if (progressBar) {
@@ -721,7 +814,7 @@
             }
         }
         
-        // 上传参考图 - 修复上传逻辑
+        // 上传参考图
         function uploadRefImage(sceneId, refIndex) {
             currentUploadSceneId = sceneId;
             currentUploadRefIndex = refIndex;
@@ -735,15 +828,12 @@
             const scene = scenes.find(s => s.id === currentUploadSceneId);
             if (!scene) return;
             
-            // 读取第一个文件
             const file = files[0];
             const reader = new FileReader();
             
             reader.onload = function(e) {
-                // 更新对应位置的参考图
                 scene.referenceImages[currentUploadRefIndex] = e.target.result;
                 
-                // 更新UI
                 const refSlot = document.getElementById(currentUploadSceneId + '_ref_' + currentUploadRefIndex);
                 if (refSlot) {
                     refSlot.classList.add('has-image');
@@ -753,7 +843,6 @@
                     `;
                 }
                 
-                // 清空状态
                 currentUploadSceneId = null;
                 currentUploadRefIndex = null;
             };
@@ -762,15 +851,44 @@
             event.target.value = '';
         }
         
-        // 更新场景数据
-        function updateSceneData(sceneId, field, value) {
-            const scene = scenes.find(s => s.id === sceneId);
-            if (scene) {
-                scene[field] = value;
-            }
+        // 上传视频参考图
+        function uploadVideoRefImage(sceneId, refIndex) {
+            currentUploadSceneId = sceneId;
+            currentVideoRefIndex = refIndex;
+            document.getElementById('video-ref-input').click();
         }
         
-        // 生成图片 - 修复回图逻辑
+        function handleVideoRefUpload(event) {
+            const files = event.target.files;
+            if (!currentUploadSceneId || currentVideoRefIndex === null || files.length === 0) return;
+            
+            const scene = scenes.find(s => s.id === currentUploadSceneId);
+            if (!scene) return;
+            
+            const file = files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                scene.videoRefImages[currentVideoRefIndex] = e.target.result;
+                
+                const refSlot = document.getElementById(currentUploadSceneId + '_video_ref_' + currentVideoRefIndex);
+                if (refSlot) {
+                    refSlot.classList.add('has-image');
+                    refSlot.innerHTML = `
+                        <img src="${e.target.result}">
+                        <span class="video-ref-number">${currentVideoRefIndex + 1}</span>
+                    `;
+                }
+                
+                currentUploadSceneId = null;
+                currentVideoRefIndex = null;
+            };
+            
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+        
+        // 生成图片 - 自动添加到视频参考图
         async function generateImage(sceneId) {
             const scene = scenes.find(s => s.id === sceneId);
             if (!scene) return;
@@ -790,13 +908,10 @@
                 return;
             }
             
-            // 更新UI
             const btn = document.getElementById(sceneId + '_btn-gen');
-            const btnText = document.getElementById(sceneId + '_btn-text');
             const progressBar = document.getElementById(sceneId + '_progress');
             
             btn.disabled = true;
-            btnText.textContent = '生成中...';
             btn.innerHTML = '<span class="loading-spinner"></span><span id="' + sceneId + '_btn-text">生成中...</span>';
             progressBar.classList.add('active');
             progressBar.innerHTML = '<div class="progress-fill" style="width: 0%"></div>';
@@ -804,10 +919,8 @@
             scene.progress = 0;
             
             try {
-                // 准备参考图URL（过滤掉null）
                 const validRefs = scene.referenceImages.filter(img => img !== null);
                 
-                // 调用API
                 const response = await fetch(`${CONFIG.grsai.baseUrl}/v1/draw/nano-banana`, {
                     method: 'POST',
                     headers: {
@@ -829,8 +942,7 @@
                 }
                 
                 const data = await response.json();
-                
-                console.log('API响应:', data); // 调试日志
+                console.log('API响应:', data);
                 
                 if (data.code === 0 && data.data && data.data.id) {
                     await pollImageResult(sceneId, data.data.id, scene);
@@ -844,13 +956,11 @@
             }
         }
         
-        // 轮询图片结果 - 修复轮询逻辑
+        // 轮询图片结果
         async function pollImageResult(sceneId, taskId, scene) {
             const apiKey = document.getElementById('grsai-key').value;
             const maxAttempts = 60;
             let attempts = 0;
-            
-            console.log('开始轮询任务:', taskId); // 调试日志
             
             const pollInterval = setInterval(async () => {
                 attempts++;
@@ -863,8 +973,6 @@
                 }
                 
                 try {
-                    console.log(`轮询第${attempts}次...`); // 调试日志
-                    
                     const response = await fetch(`${CONFIG.grsai.baseUrl}/v1/draw/result`, {
                         method: 'POST',
                         headers: {
@@ -879,46 +987,39 @@
                     }
                     
                     const data = await response.json();
-                    console.log('轮询响应:', data); // 调试日志
+                    console.log('轮询响应:', data);
                     
                     if (data.code === 0 && data.data) {
                         const { progress, status, results } = data.data;
                         
-                        // 更新进度
                         scene.progress = progress;
                         const progressBar = document.getElementById(sceneId + '_progress');
                         if (progressBar) {
                             progressBar.innerHTML = `<div class="progress-fill" style="width: ${progress}%"></div>`;
                         }
                         
-                        console.log(`进度: ${progress}%, 状态: ${status}`); // 调试日志
-                        
                         if (status === 'succeeded' && results && results.length > 0) {
                             clearInterval(pollInterval);
                             
-                            console.log('生成成功！结果:', results[0]); // 调试日志
-                            
-                            // 保存结果 - 使用url字段
                             scene.generatedImage = results[0].url;
                             scene.progress = 100;
                             
-                            // 刷新UI显示
+                            // 自动添加到视频参考图的第一个位置
+                            scene.videoRefImages[0] = scene.generatedImage;
+                            
                             refreshSceneRow(sceneId);
                             
-                            alert('图片生成成功！');
+                            alert('图片生成成功！已自动添加到视频参考图1');
                         } else if (status === 'failed') {
                             clearInterval(pollInterval);
-                            console.error('生成失败:', data.data.failure_reason); // 调试日志
                             alert('生成失败：' + (data.data.failure_reason || '未知错误'));
                             resetGenerateButton(sceneId);
                         }
-                    } else {
-                        console.warn('轮询响应格式异常:', data);
                     }
                 } catch (error) {
                     console.error('轮询错误:', error);
                 }
-            }, 1000); // 每秒轮询一次
+            }, 1000);
         }
         
         function resetGenerateButton(sceneId) {
@@ -950,6 +1051,33 @@
                 refreshSceneRow(sceneId);
                 generateImage(sceneId);
             }
+        }
+        
+        // 生成视频
+        async function generateVideo(sceneId) {
+            const scene = scenes.find(s => s.id === sceneId);
+            if (!scene) return;
+            
+            const apiKey = document.getElementById('juzi-key').value;
+            const model = document.getElementById('video-model').value;
+            
+            if (!apiKey) {
+                alert('请先配置橘子AI API Key');
+                return;
+            }
+            
+            if (!scene.videoPrompt) {
+                alert('请输入视频提示词');
+                return;
+            }
+            
+            const validVideoRefs = scene.videoRefImages.filter(img => img !== null);
+            if (validVideoRefs.length === 0) {
+                alert('请上传视频参考图');
+                return;
+            }
+            
+            alert('视频生成功能开发中，敬请期待...');
         }
         
         // 刷新分镜行
@@ -984,23 +1112,20 @@
             document.getElementById('preview-modal').classList.remove('active');
         }
         
-        // 下载图片 - 修复下载功能
+        // 下载图片
         function downloadImage(sceneId) {
             const scene = scenes.find(s => s.id === sceneId);
             if (!scene || !scene.generatedImage) return;
             
-            // 创建一个临时的链接元素
             const link = document.createElement('a');
             link.href = scene.generatedImage;
             link.download = `manju_scene_${scene.number}_${Date.now()}.png`;
             link.style.display = 'none';
             
-            // 添加到DOM，触发点击，然后移除
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             
-            // 也尝试在新标签页打开作为备份
             window.open(scene.generatedImage, '_blank');
         }
         
@@ -1009,7 +1134,6 @@
             const scene = scenes.find(s => s.id === sceneId);
             if (!scene) return;
             
-            // 基于生图说明生成视频提示词
             if (scene.imagePrompt) {
                 scene.videoPrompt = scene.imagePrompt + '，动态场景，流畅运镜';
                 const textarea = document.querySelector(`#${sceneId} textarea[oninput*="videoPrompt"]`);
@@ -1022,13 +1146,21 @@
             }
         }
         
+        // 更新场景数据
+        function updateSceneData(sceneId, field, value) {
+            const scene = scenes.find(s => s.id === sceneId);
+            if (scene) {
+                scene[field] = value;
+            }
+        }
+        
         // 保存所有数据
         function saveAllData() {
-            // 过滤掉Base64图片以节省空间（实际应用中应该保存到服务器）
             const saveData = scenes.map(scene => ({
                 ...scene,
                 referenceImages: scene.referenceImages.map(img => img ? 'SAVED' : null),
-                generatedImage: scene.generatedImage ? 'SAVED' : null
+                generatedImage: scene.generatedImage ? 'SAVED' : null,
+                videoRefImages: scene.videoRefImages.map(img => img ? 'SAVED' : null)
             }));
             
             localStorage.setItem('manju_scenes', JSON.stringify(saveData));
@@ -1046,11 +1178,11 @@
                 const parsedScenes = JSON.parse(savedScenes);
                 sceneCounter = parseInt(savedCounter) || 0;
                 
-                // 恢复场景但图片标记为null
                 scenes = parsedScenes.map(scene => ({
                     ...scene,
                     referenceImages: new Array(7).fill(null),
                     generatedImage: null,
+                    videoRefImages: new Array(3).fill(null),
                     progress: 0,
                     status: ''
                 }));
