@@ -796,8 +796,14 @@
                             
                             <button class="btn-gen-video" id="${scene.id}_btn-gen-video" onclick="generateVideo('${scene.id}')" 
                                     ${!scene.videoRefImages.some(img => img !== null) ? 'disabled' : ''}>
-                                <span>🎬</span><span id="${scene.id}_video-btn-text">生成视频</span>
+                                <span>🎬</span>
+                                <span id="${scene.id}_video-btn-text">
+                                    ${!scene.videoRefImages.some(img => img !== null) ? '先生成图片或上传参考图' : '生成视频'}
+                                </span>
                             </button>
+                            ${!scene.videoRefImages.some(img => img !== null) ? 
+                                '<div style="color: rgba(255,255,255,0.4); font-size: 10px; margin-top: 5px;">提示：生成图片后自动添加到参考图1</div>' : ''
+                            }
                         </div>
                     </div>
                 </div>
