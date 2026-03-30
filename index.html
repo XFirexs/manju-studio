@@ -886,6 +886,17 @@
                     `;
                 }
                 
+                // 立即更新视频生成按钮状态
+                const videoBtn = document.getElementById(currentUploadSceneId + '_btn-gen-video');
+                const videoBtnText = document.getElementById(currentUploadSceneId + '_video-btn-text');
+                if (videoBtn && videoBtnText) {
+                    const hasVideoRefs = scene.videoRefImages.some(img => img !== null);
+                    if (hasVideoRefs) {
+                        videoBtn.disabled = false;
+                        videoBtnText.textContent = '生成视频';
+                    }
+                }
+                
                 currentUploadSceneId = null;
                 currentVideoRefIndex = null;
             };
