@@ -785,20 +785,7 @@
                 </div>
             `;
             
-            const existingRows = Array.from(container.children);
-            let insertBefore = null;
-            for (const row of existingRows) {
-                const existingNumber = parseInt(row.id.replace('scene_', ''));
-                if (existingNumber > scene.number) {
-                    insertBefore = row;
-                    break;
-                }
-            }
-            if (insertBefore) {
-                insertBefore.insertAdjacentHTML('beforebegin', rowHtml);
-            } else {
-                container.insertAdjacentHTML('beforeend', rowHtml);
-            }
+            container.insertAdjacentHTML('beforeend', rowHtml);
             
             if (scene.progress > 0 && scene.progress < 100) {
                 const progressBar = document.getElementById(scene.id + '_progress');
@@ -1003,43 +990,32 @@
                     const data = await response.json();
                     console.log('轮询响应:', data);
                     
-                    if (data.code === 0) {
-                        const apiData = data.data;
-                        const { progress, status, results, failure_reason } = apiData || {};
+                    if (data.code === 0 && data.data) {
+                        const { progress, status, results } = data.data;
                         
-                        if (apiData) {
-                            if (status === 'succeeded' && results && results.length > 0) {
-                                clearInterval(pollInterval);
-                                scene.generatedImage = results[0].url;
-                                scene.progress = 100;
-                                scene.videoRefImages[0] = scene.generatedImage;
-                                refreshSceneRow(sceneId);
-                                console.log('图片生成成功');
-                            } else if (status === 'failed') {
-                                clearInterval(pollInterval);
-                                let errorMsg = '生成失败：';
-                                if (failure_reason) {
-                                    if (failure_reason.includes('timeout')) {
-                                        errorMsg += '网络超时，请检查网络连接后重试';
-                                    } else if (failure_reason.includes('policy') || failure_reason.includes('违规')) {
-                                        errorMsg += '提示词违规，请修改提示词后重试';
-                                    } else if (failure_reason.includes('rate limit')) {
-                                        errorMsg += '请求频率过高，请稍后重试';
-                                    } else {
-                                        errorMsg += failure_reason;
-                                    }
-                                } else {
-                                    errorMsg += '未知错误';
-                                }
-                                alert(errorMsg);
-                                resetGenerateButton(sceneId);
-                            } else if (status === 'pending' || status === 'processing') {
-                                console.log('正在生成中... 进度:' + (progress || 0) + '%');
-                            }
-                        } else {
-                            console.log('正在生成中，等待数据返回...');
+                        scene.progress = progress;
+                        const progressBar = document.getElementById(sceneId + '_progress');
+                        if (progressBar) {
+                            progressBar.innerHTML = `<div class="progress-fill" style="width: ${progress}%"></div>`;
                         }
-                    }
+                        
+                        if (status === 'succeeded' && results && results.length > 0) {
+                            clearInterval(pollInterval);
+                            
+                            scene.generatedImage = results[0].url;
+                            scene.progress = 100;
+                            
+                            // 自动添加到视频参考图的第一个位置
+                            scene.videoRefImages[0] = scene.generatedImage;
+                            
+                            refreshSceneRow(sceneId);
+                            
+                            console.log('图片生成成功');
+                        } else if (status === 'failed') {
+                            clearInterval(pollInterval);
+                            showFailureReason(data.data.failure_reason);
+                            resetGenerateButton(sceneId);
+                        }
                     }
                 } catch (error) {
                     console.error('轮询错误:', error);
@@ -1121,19 +1097,8 @@
         function deleteSceneRow(sceneId) {
             if (confirm('确认删除该分镜？')) {
                 scenes = scenes.filter(s => s.id !== sceneId);
-                scenes.forEach((scene, index) => {
-                    scene.number = index + 1;
-                    scene.id = 'scene_' + (index + 1);
-                });
-                sceneCounter = scenes.length;
-                const container = document.getElementById('scenes-container');
-                container.innerHTML = '';
-                scenes.forEach(scene => {
-                    renderSceneRow(scene);
-                });
+                document.getElementById(sceneId).remove();
                 updateEmptyState();
-            }
-        }
             }
         }
         
@@ -1145,6 +1110,19 @@
         
         // 关闭预览
         function closePreview() {
+
+        function showFailureReason(reason) {
+            let msg = '生成失败：';
+            if (reason) {
+                if (reason.includes('timeout')) msg += '网络超时，请检查网络连接后重试';
+                else if (reason.includes('policy') || reason.includes('违规')) msg += '提示词违规，请修改提示词后重试';
+                else if (reason.includes('rate limit')) msg += '请求频率过高，请稍后重试';
+                else msg += reason;
+            } else {
+                msg += '未知错误';
+            }
+            alert(msg);
+        }
             document.getElementById('preview-modal').classList.remove('active');
         }
         
