@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>漫剧工作室 - 专业AI漫剧制作工作台</title>
-    <meta name="description" content="AI驱动的小说转漫剧平台，一站式完成角色、分镜、视频制作">
+    <title>漫剧工作室 - AI漫剧分镜制作</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft YaHei", "PingFang SC", sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
             min-height: 100vh;
-            color: white;
+            color: #fff;
+            padding-bottom: 80px;
         }
         
-        /* 顶部导航栏 */
+        /* 顶部导航 */
         .header {
-            background: rgba(26, 26, 46, 0.95);
+            background: rgba(15, 15, 35, 0.95);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 15px 25px;
+            padding: 12px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -31,413 +31,417 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
         .logo-icon {
-            width: 45px;
-            height: 45px;
+            width: 38px;
+            height: 38px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 18px;
             font-weight: bold;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
         .logo-text {
-            display: flex;
-            flex-direction: column;
+            font-size: 16px;
+            font-weight: 600;
         }
-        .logo-title {
-            font-size: 20px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .logo-subtitle {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.6);
-            letter-spacing: 1px;
-        }
-        .header-actions {
-            display: flex;
-            gap: 10px;
-        }
-        .btn-header {
+        .header-btn {
             background: rgba(102, 126, 234, 0.2);
-            border: 1px solid rgba(102, 126, 234, 0.3);
+            border: 1px solid rgba(102, 126, 234, 0.4);
             color: #667eea;
             padding: 8px 16px;
             border-radius: 6px;
             font-size: 13px;
             cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn-header:hover {
-            background: rgba(102, 126, 234, 0.3);
+            margin-left: 10px;
         }
         
-        /* 主布局 */
+        /* 主容器 */
         .main-container {
-            display: grid;
-            grid-template-columns: 280px 1fr 300px;
-            gap: 0;
-            height: calc(100vh - 70px);
-            overflow: hidden;
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
         }
         
-        /* 左侧边栏 - 项目导航 */
-        .sidebar-left {
-            background: rgba(26, 26, 46, 0.5);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            overflow-y: auto;
-        }
-        .sidebar-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .project-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .project-item {
+        /* 工具栏 */
+        .toolbar {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .project-item:hover {
-            background: rgba(102, 126, 234, 0.1);
-            border-color: rgba(102, 126, 234, 0.3);
-        }
-        .project-item.active {
-            background: rgba(102, 126, 234, 0.2);
-            border-color: #667eea;
-        }
-        .project-name {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: #fff;
-        }
-        .project-desc {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.5);
-            line-height: 1.3;
-        }
-        .project-meta {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-        .badge {
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 9px;
-            font-weight: 500;
-        }
-        .badge-draft { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
-        .badge-progress { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
-        .badge-done { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
-        
-        /* 中间工作区 */
-        .work-area {
-            background: rgba(22, 33, 62, 0.5);
-            padding: 20px;
-            overflow-y: auto;
-        }
-        
-        /* 工作区标签 */
-        .work-tabs {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 20px;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 5px;
             border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
         }
-        .work-tab {
-            background: transparent;
-            border: none;
-            color: rgba(255, 255, 255, 0.6);
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-        .work-tab:hover {
-            color: rgba(255, 255, 255, 0.8);
-        }
-        .work-tab.active {
-            background: rgba(102, 126, 234, 0.2);
-            color: #667eea;
-        }
-        
-        /* AI生成面板 */
-        .ai-panel {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 20px;
-        }
-        .panel-header {
+        .toolbar-item {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+        }
+        .toolbar-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .toolbar-select {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .btn-add-row {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-left: auto;
+        }
+        .btn-add-row:hover {
+            opacity: 0.9;
+        }
+        
+        /* 分镜行 */
+        .scene-row {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
             margin-bottom: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .scene-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .scene-number {
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+        }
+        .btn-delete-row {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        /* 3列网格布局 */
+        .scene-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+        
+        /* 板块样式 */
+        .panel {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .panel-header {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         .panel-icon {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        /* 7个参考图区域 */
+        .ref-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .ref-slot {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
-        }
-        .panel-title {
-            font-size: 16px;
-            font-weight: 600;
-        }
-        
-        /* 模型选择器 */
-        .model-selector {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .model-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 15px;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
             transition: all 0.3s;
         }
-        .model-card:hover {
-            border-color: rgba(102, 126, 234, 0.5);
-        }
-        .model-card.active {
+        .ref-slot:hover {
             border-color: #667eea;
             background: rgba(102, 126, 234, 0.1);
         }
-        .model-name {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: #fff;
+        .ref-slot.has-image {
+            border-style: solid;
+            border-color: #22c55e;
         }
-        .model-desc {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.5);
+        .ref-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .ref-slot .upload-icon {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        .ref-number {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 3px;
         }
         
-        /* 表单区域 */
-        .form-grid {
+        /* 3个视频参考图 */
+        .video-ref-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
         }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .form-group.full-width {
-            grid-column: 1 / -1;
-        }
-        .form-label {
-            font-size: 12px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.7);
-        }
-        .form-input, .form-select, .form-textarea {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .video-ref-slot {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 255, 255, 0.2);
             border-radius: 6px;
-            padding: 12px;
-            color: white;
-            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
             transition: all 0.3s;
         }
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
+        .video-ref-slot:hover {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+        .video-ref-slot.has-image {
+            border-style: solid;
+            border-color: #22c55e;
+        }
+        .video-ref-slot.has-generated-image {
+            border-style: solid;
+            border-color: #667eea;
+        }
+        .video-ref-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .video-ref-slot .upload-icon {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        .video-ref-number {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        /* 通用输入框 */
+        .input-textarea {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 10px;
+            color: #fff;
+            font-size: 12px;
+            width: 100%;
+            resize: none;
+            min-height: 60px;
+        }
+        .input-textarea:focus {
             outline: none;
             border-color: #667eea;
-            background: rgba(102, 126, 234, 0.05);
-        }
-        .form-textarea {
-            min-height: 80px;
-            resize: vertical;
         }
         
-        /* 进度条 */
-        .progress-section {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
+        /* 图片生成框 */
+        .image-preview-box {
+            background: rgba(0, 0, 0, 0.2);
+            border: 2px dashed rgba(255, 255, 255, 0.2);
             border-radius: 8px;
-            display: none;
-        }
-        .progress-section.active {
-            display: block;
-        }
-        .progress-header {
+            min-height: 150px;
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        .progress-label {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.7);
-        }
-        .progress-percent {
-            font-size: 12px;
-            font-weight: 600;
-            color: #667eea;
-        }
-        .progress-bar-bg {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
+            align-items: center;
+            justify-content: center;
+            position: relative;
             overflow: hidden;
         }
-        .progress-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            border-radius: 3px;
-            transition: width 0.3s ease;
+        .image-preview-box.has-image {
+            border-style: solid;
+            border-color: #667eea;
+            padding: 8px;
         }
-        .progress-status {
-            margin-top: 8px;
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.5);
+        .image-preview {
+            width: 100%;
+            max-height: 140px;
+            object-fit: contain;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .image-preview:hover {
+            opacity: 0.9;
+        }
+        .empty-hint {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+            text-align: center;
+            padding: 10px;
         }
         
-        /* 生成结果展示 */
-        .result-section {
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            display: none;
-        }
-        .result-section.active {
-            display: block;
-        }
-        .result-header {
+        /* 按钮 */
+        .btn-gen-image {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
         }
-        .result-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #fff;
+        .btn-gen-image:hover {
+            opacity: 0.9;
         }
-        .result-actions {
+        .btn-gen-image:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .btn-gen-video {
+            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
             display: flex;
-            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
         }
-        .btn-small {
+        .btn-gen-video:hover {
+            opacity: 0.9;
+        }
+        .btn-gen-video:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .btn-regen-prompt {
             background: rgba(102, 126, 234, 0.2);
             border: 1px solid rgba(102, 126, 234, 0.3);
             color: #667eea;
             padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
+            border-radius: 4px;
+            font-size: 11px;
             cursor: pointer;
-            transition: all 0.3s;
+            align-self: flex-start;
         }
-        .btn-small:hover {
+        .btn-regen-prompt:hover {
             background: rgba(102, 126, 234, 0.3);
         }
-        .result-image-container {
-            position: relative;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 8px;
-            overflow: hidden;
-            aspect-ratio: 16/9;
-            cursor: pointer;
-        }
-        .result-image {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            transition: transform 0.3s;
-        }
-        .result-image:hover {
-            transform: scale(1.02);
-        }
-        .result-info {
-            margin-top: 12px;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 6px;
-        }
-        .result-info-item {
-            display: flex;
-            justify-content: space-between;
+        
+        .btn-small {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
             font-size: 11px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 5px;
-        }
-        
-        /* 按钮样式 */
-        .btn-generate {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 14px 30px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
             cursor: pointer;
-            width: 100%;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
-        .btn-generate:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        .btn-small:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
-        .btn-generate:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
+        .btn-download {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+        }
+        .btn-download:hover {
+            background: rgba(34, 197, 94, 0.3);
         }
         
-        /* 加载动画 */
-        .loading-spinner {
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+        /* 进度条 */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            display: none;
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .progress-bar.active {
+            display: block;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+        
+        /* 操作按钮组 */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        
+        /* 提示信息 */
+        .hint-text {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 10px;
+            text-align: center;
+            margin-top: 5px;
         }
         
         /* 全屏预览 */
@@ -472,337 +476,452 @@
             top: -40px;
             right: 0;
             color: white;
-            font-size: 24px;
+            font-size: 28px;
             cursor: pointer;
             padding: 10px;
         }
-        .preview-download {
-            position: absolute;
-            bottom: -50px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(102, 126, 234, 0.3);
-            border: 1px solid rgba(102, 126, 234, 0.5);
-            color: #667eea;
-            padding: 10px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-        .preview-download:hover {
-            background: rgba(102, 126, 234, 0.4);
+        
+        /* 隐藏的文件输入 */
+        .hidden-input {
+            display: none;
         }
         
-        /* 右侧边栏 - 资源库 */
-        .sidebar-right {
-            background: rgba(26, 26, 46, 0.5);
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            overflow-y: auto;
+        /* 加载动画 */
+        .loading-spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
         }
-        .resource-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .resource-item {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .resource-item:hover {
-            border-color: rgba(102, 126, 234, 0.5);
-        }
-        .resource-thumb {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            background: rgba(0, 0, 0, 0.3);
-        }
-        .resource-info {
-            padding: 10px;
-        }
-        .resource-name {
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: #fff;
-        }
-        .resource-meta {
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.5);
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
-        /* 响应式设计 */
-        @media (max-width: 1024px) {
-            .main-container {
-                grid-template-columns: 200px 1fr;
-            }
-            .sidebar-right {
-                display: none;
+        /* 响应式 */
+        @media (max-width: 1200px) {
+            .scene-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
             }
         }
         
         @media (max-width: 768px) {
-            .main-container {
-                grid-template-columns: 1fr;
-                height: auto;
+            .ref-grid, .video-ref-grid {
+                grid-template-columns: repeat(4, 1fr);
             }
-            .sidebar-left {
-                display: none;
+            .header {
+                flex-direction: column;
+                gap: 10px;
             }
-            .form-grid {
-                grid-template-columns: 1fr;
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn-add-row {
+                margin-left: 0;
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 顶部导航栏 -->
+    <!-- 顶部导航 -->
     <div class="header">
         <div class="logo">
             <div class="logo-icon">漫</div>
-            <div class="logo-text">
-                <div class="logo-title">漫剧工作室</div>
-                <div class="logo-subtitle">AI漫剧制作工作台</div>
-            </div>
+            <div class="logo-text">漫剧工作室 - 分镜制作</div>
         </div>
-        <div class="header-actions">
-            <button class="btn-header" onclick="showApiModal()">API配置</button>
-            <button class="btn-header" onclick="showProjectModal()">新建项目</button>
+        <div>
+            <button class="header-btn" onclick="showApiModal()">API配置</button>
+            <button class="header-btn" onclick="saveAllData()">保存进度</button>
         </div>
     </div>
     
-    <!-- 主布局 -->
+    <!-- 主容器 -->
     <div class="main-container">
-        <!-- 左侧边栏 -->
-        <div class="sidebar-left">
-            <div class="sidebar-title">我的项目</div>
-            <div class="project-list">
-                <div class="project-item active">
-                    <div class="project-name">示例项目</div>
-                    <div class="project-desc">测试用项目</div>
-                    <div class="project-meta">
-                        <span class="badge badge-progress">进行中</span>
-                        <span class="badge" style="background: rgba(102, 126, 234, 0.2); color: #667eea;">3个分镜</span>
-                    </div>
-                </div>
+        <!-- 工具栏 -->
+        <div class="toolbar">
+            <div class="toolbar-item">
+                <span class="toolbar-label">生图模型：</span>
+                <select id="image-model" class="toolbar-select">
+                    <option value="nano-banana-fast">香蕉二 Fast</option>
+                    <option value="nano-banana-2-cl">香蕉二 CL</option>
+                    <option value="nano-banana-2-4k-cl">香蕉二 4K</option>
+                </select>
             </div>
+            <div class="toolbar-item">
+                <span class="toolbar-label">视频模型：</span>
+                <select id="video-model" class="toolbar-select">
+                    <option value="VEO 3.1 Fast">Veo 3.1 Fast</option>
+                    <option value="VEO 3.1 Fast 4K">Veo 3.1 Fast 4K</option>
+                    <option value="VEO 3.1 Fast 多参考版">Veo 3.1 Fast 多参考版</option>
+                </select>
+            </div>
+            <div class="toolbar-item">
+                <span class="toolbar-label">图片比例：</span>
+                <select id="image-ratio" class="toolbar-select">
+                    <option value="16:9" selected>16:9</option>
+                    <option value="9:16">9:16</option>
+                    <option value="1:1">1:1</option>
+                    <option value="4:3">4:3</option>
+                </select>
+            </div>
+            <div class="toolbar-item">
+                <span class="toolbar-label">图片大小：</span>
+                <select id="image-size" class="toolbar-select">
+                    <option value="1K" selected>1K</option>
+                    <option value="2K">2K</option>
+                    <option value="4K">4K</option>
+                </select>
+            </div>
+            <button class="btn-add-row" onclick="addSceneRow()">+ 添加分镜</button>
         </div>
         
-        <!-- 中间工作区 -->
-        <div class="work-area">
-            <!-- 工作区标签 -->
-            <div class="work-tabs">
-                <button class="work-tab active" onclick="switchWorkTab('ai')">AI生成</button>
-                <button class="work-tab" onclick="switchWorkTab('characters')">角色管理</button>
-                <button class="work-tab" onclick="switchWorkTab('scenes')">分镜管理</button>
-            </div>
-            
-            <!-- AI生成面板 -->
-            <div class="ai-panel">
-                <div class="panel-header">
-                    <div class="panel-icon">✨</div>
-                    <div class="panel-title">AI图片生成</div>
-                </div>
-                
-                <!-- 模型选择器 -->
-                <div style="margin-bottom: 15px;">
-                    <div class="form-label">选择模型</div>
-                    <div class="model-selector">
-                        <div class="model-card active" onclick="selectModel(this, 'nano-banana-fast')">
-                            <div class="model-name">香蕉二 Fast</div>
-                            <div class="model-desc">1K快速生成</div>
-                        </div>
-                        <div class="model-card" onclick="selectModel(this, 'nano-banana-2-cl')">
-                            <div class="model-name">香蕉二 CL</div>
-                            <div class="model-desc">1K标准质量</div>
-                        </div>
-                        <div class="model-card" onclick="selectModel(this, 'nano-banana-2-4k-cl')">
-                            <div class="model-name">香蕉二 4K</div>
-                            <div class="model-desc">4K高清画质</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 表单 -->
-                <div class="form-grid">
-                    <div class="form-group full-width">
-                        <div class="form-label">提示词</div>
-                        <textarea id="prompt-input" class="form-textarea" placeholder="输入生成描述，例如：一个可爱的猫咪在草地上玩耍，阳光明媚，风格温馨可爱"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <div class="form-label">宽高比</div>
-                        <select id="aspect-ratio" class="form-select">
-                            <option value="auto">自动</option>
-                            <option value="16:9" selected>16:9 (横屏)</option>
-                            <option value="9:16">9:16 (竖屏)</option>
-                            <option value="1:1">1:1 (正方形)</option>
-                            <option value="4:3">4:3 (经典)</option>
-                            <option value="3:2">3:2 (电影)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <div class="form-label">图片大小</div>
-                        <select id="image-size" class="form-select">
-                            <option value="1K" selected>1K (快速)</option>
-                            <option value="2K">2K (标准)</option>
-                            <option value="4K">4K (高清)</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <!-- 生成按钮 -->
-                <button class="btn-generate" onclick="generateImage()" id="btn-generate">
-                    <span id="generate-icon">🎨</span>
-                    <span id="generate-text">开始生成</span>
-                </button>
-                
-                <!-- 进度条 -->
-                <div class="progress-section" id="progress-section">
-                    <div class="progress-header">
-                        <span class="progress-label">生成进度</span>
-                        <span class="progress-percent" id="progress-percent">0%</span>
-                    </div>
-                    <div class="progress-bar-bg">
-                        <div class="progress-bar-fill" id="progress-bar-fill" style="width: 0%"></div>
-                    </div>
-                    <div class="progress-status" id="progress-status">正在初始化生成任务...</div>
-                </div>
-                
-                <!-- 生成结果 -->
-                <div class="result-section" id="result-section">
-                    <div class="result-header">
-                        <span class="result-title">✨ 生成完成</span>
-                        <div class="result-actions">
-                            <button class="btn-small" onclick="previewImage()">预览</button>
-                            <button class="btn-small" onclick="downloadImage()">下载</button>
-                            <button class="btn-small" onclick="saveToResource()">保存到资源库</button>
-                        </div>
-                    </div>
-                    <div class="result-image-container" onclick="previewImage()">
-                        <img id="result-image" class="result-image" alt="生成的图片">
-                    </div>
-                    <div class="result-info">
-                        <div class="result-info-item">
-                            <span>生成时间</span>
-                            <span id="result-time">-</span>
-                        </div>
-                        <div class="result-info-item">
-                            <span>使用模型</span>
-                            <span id="result-model">-</span>
-                        </div>
-                        <div class="result-info-item">
-                            <span>图片尺寸</span>
-                            <span id="result-size">-</span>
-                        </div>
-                        <div class="result-info-item">
-                            <span>宽高比</span>
-                            <span id="result-aspect">-</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- 分镜列表容器 -->
+        <div id="scenes-container"><!-- 默认分镜 --><div class="scene-row" id="scene_1"><div class="scene-header"><span class="scene-number">分镜 #1</span></div><div class="scene-grid"><div class="ref-slot" onclick="uploadRefImage('scene_1',0)"><span class="upload-icon">+</span><span class="ref-number">1</span></div><div class="ref-slot" onclick="uploadRefImage('scene_1',1)"><span class="upload-icon">+</span><span class="ref-number">2</span></div><div class="ref-slot" onclick="uploadRefImage('scene_1',2)"><span class="upload-icon">+</span><span class="ref-number">3</span></div><div class="ref-slot" onclick="uploadRefImage('scene_1',3)"><span class="upload-icon">+</span><span class="ref-number">4</span></div><div class="ref-slot" onclick="uploadRefImage('scene_1',4)"><span class="upload-icon">+</span><span class="ref-number">5</span></div><div class="ref-slot" onclick="uploadRefImage('scene_1',5)"><span class="upload-icon">+</span><span class="ref-number">6</span></div><div class="ref-slot" onclick="uploadRefImage('scene_1',6)"><span class="upload-icon">+</span><span class="ref-number">7</span></div></div></div>
+            <!-- 动态添加分镜行 -->
         </div>
         
-        <!-- 右侧资源库 -->
-        <div class="sidebar-right">
-            <div class="sidebar-title">资源库</div>
-            <div class="resource-list" id="resource-list">
-                <!-- 动态加载资源 -->
-            </div>
+        <!-- 空状态提示 -->
+        <div id="empty-state" style="text-align: center; padding: 60px 20px; color: rgba(255, 255, 255, 0.4);">
+            <div style="font-size: 48px; margin-bottom: 20px;">📽️</div>
+            <div style="font-size: 18px; font-weight: 500; margin-bottom: 10px;">开始创建你的漫剧分镜</div>
+            <div style="font-size: 14px;">点击上方"添加分镜"按钮开始</div>
         </div>
     </div>
     
-    <!-- 全屏预览弹窗 -->
+    <!-- 全屏预览 -->
     <div class="preview-modal" id="preview-modal">
         <div class="preview-content">
             <span class="preview-close" onclick="closePreview()">✕</span>
-            <img id="preview-image-full" class="preview-image" alt="预览图片">
-            <button class="preview-download" onclick="downloadImage()">⬇️ 下载图片</button>
+            <img id="preview-image-full" class="preview-image" alt="预览">
         </div>
     </div>
     
     <!-- API配置弹窗 -->
     <div id="api-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 2000; align-items: center; justify-content: center;">
-        <div style="background: #1a1a2e; border-radius: 12px; padding: 30px; max-width: 450px; width: 90%;">
+        <div style="background: rgba(15, 15, 35, 0.95); border-radius: 12px; padding: 30px; max-width: 450px; width: 90%;">
             <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 20px; color: #fff;">API配置</h3>
-            <div class="form-group" style="margin-bottom: 15px;">
-                <div class="form-label">GRSai API Key</div>
-                <input type="password" id="grsai-key" class="form-input" placeholder="输入你的GRSai API Key">
+            <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;">
+                <div>
+                    <div style="font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-bottom: 6px;">GRSai API Key</div>
+                    <input type="password" id="grsai-key" style="width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 12px; color: #fff; font-size: 13px;" placeholder="输入GRSai API Key">
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-bottom: 6px;">橘子AI API Key</div>
+                    <input type="password" id="juzi-key" style="width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 12px; color: #fff; font-size: 13px;" placeholder="输入橘子AI API Key">
+                </div>
             </div>
-            <div class="form-group" style="margin-bottom: 20px;">
-                <div class="form-label">橘子AI API Key</div>
-                <input type="password" id="juzi-key" class="form-input" placeholder="输入你的橘子AI API Key">
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <div style="display: flex; gap: 10px;">
                 <button onclick="closeApiModal()" style="flex: 1; background: rgba(255, 255, 255, 0.1); border: none; color: white; padding: 12px; border-radius: 6px; cursor: pointer;">取消</button>
                 <button onclick="saveApiConfig()" style="flex: 1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white; padding: 12px; border-radius: 6px; cursor: pointer;">保存</button>
             </div>
         </div>
     </div>
+    
+    <!-- 隐藏的文件输入 -->
+    <input type="file" id="ref-image-input" class="hidden-input" accept="image/*" multiple onchange="handleRefImageUpload(event)">
+    <input type="file" id="video-ref-input" class="hidden-input" accept="image/*" multiple onchange="handleVideoRefUpload(event)">
 
     <script>
         // 配置
         const CONFIG = {
-            grsai: {
-                baseUrl: 'https://grsai.dakka.com.cn'
-            }
+            grsai: { baseUrl: 'https://grsai.dakka.com.cn' },
+            juzi: { baseUrl: 'http://juziaigc.com/open/api/video' },
+            maxRefImages: 7,
+            maxVideoRefImages: 3
         };
         
-        let currentModel = 'nano-banana-fast';
-        let currentImage = null;
-        let generationId = null;
+        // 全局状态
+        let scenes = [];
+        let sceneCounter = 0;
+        let currentUploadSceneId = null;
+        let currentUploadRefIndex = null;
+        let currentVideoRefIndex = null;
         
-        // 选择模型
-        function selectModel(element, model) {
-            document.querySelectorAll('.model-card').forEach(card => card.classList.remove('active'));
-            element.classList.add('active');
-            currentModel = model;
+        // 初始化
+        window.addEventListener('DOMContentLoaded', function() {
+            loadAllData();
+            
+            if (scenes.length === 0) {
+                addSceneRow();
+            }
+        });
+        
+        // 添加分镜行
+        function addSceneRow() {
+            sceneCounter++;
+            const sceneId = 'scene_' + sceneCounter;
+            
+            const sceneData = {
+                id: sceneId,
+                number: sceneCounter,
+                imagePrompt: '',
+                referenceImages: new Array(7).fill(null),
+                generatedImage: null,
+                videoPrompt: '',
+                videoRefImages: new Array(3).fill(null),
+                generatedVideo: null,
+                progress: 0,
+                status: ''
+            };
+            
+            scenes.push(sceneData);
+            renderSceneRow(sceneData);
+            updateEmptyState();
+        }
+        
+        // 渲染分镜行
+        function renderSceneRow(scene) {
+            const container = document.getElementById('scenes-container');
+            
+            // 生成7个参考图槽位HTML
+            let refSlotsHtml = '';
+            for (let i = 0; i < 7; i++) {
+                const hasImage = scene.referenceImages[i] !== null;
+                refSlotsHtml += `
+                    <div class="ref-slot ${hasImage ? 'has-image' : ''}" 
+                         onclick="uploadRefImage('${scene.id}', ${i})"
+                         id="${scene.id}_ref_${i}">
+                        ${hasImage ? 
+                            `<img src="${scene.referenceImages[i]}">` : 
+                            `<span class="upload-icon">+</span>`
+                        }
+                        <span class="ref-number">${i + 1}</span>
+                    </div>
+                `;
+            }
+            
+            // 生成3个视频参考图槽位HTML
+            let videoRefSlotsHtml = '';
+            for (let i = 0; i < 3; i++) {
+                const hasImage = scene.videoRefImages[i] !== null;
+                const isGeneratedImage = i === 0 && scene.generatedImage && scene.videoRefImages[0] === scene.generatedImage;
+                
+                videoRefSlotsHtml += `
+                    <div class="video-ref-slot ${hasImage ? 'has-image' : ''} ${isGeneratedImage ? 'has-generated-image' : ''}" 
+                         onclick="uploadVideoRefImage('${scene.id}', ${i})"
+                         id="${scene.id}_video_ref_${i}">
+                        ${hasImage ? 
+                            `<img src="${scene.videoRefImages[i]}">` : 
+                            `<span class="upload-icon">+</span>`
+                        }
+                        <span class="video-ref-number">${i + 1}</span>
+                    </div>
+                `;
+            }
+            
+            const rowHtml = `
+                <div class="scene-row" id="${scene.id}">
+                    <div class="scene-header">
+                        <span class="scene-number">分镜 #${scene.number}</span>
+                        <button class="btn-delete-row" onclick="deleteSceneRow('${scene.id}')">删除</button>
+                    </div>
+                    <div class="scene-grid">
+                        <!-- 第1列：7个参考图 -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <span class="panel-icon">🖼️</span>
+                                参考图（7张）
+                            </div>
+                            <div class="ref-grid">
+                                ${refSlotsHtml}
+                            </div>
+                        </div>
+                        
+                        <!-- 第2列：生图说明 + 生成图片 -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <span class="panel-icon">🎨</span>
+                                图片生成
+                            </div>
+                            <textarea class="input-textarea" placeholder="描述要生成的画面..." 
+                                      oninput="updateSceneData('${scene.id}', 'imagePrompt', this.value)">${scene.imagePrompt}</textarea>
+                            <div class="image-preview-box ${scene.generatedImage ? 'has-image' : ''}" id="${scene.id}_image-box">
+                                ${scene.generatedImage ? 
+                                    `<img src="${scene.generatedImage}" class="image-preview" onclick="previewImage('${scene.generatedImage}')" alt="生成的图片">` :
+                                    '<div class="empty-hint">生成图片后会显示在这里</div>'
+                                }
+                            </div>
+                            <div class="progress-bar" id="${scene.id}_progress"></div>
+                            <button class="btn-gen-image" id="${scene.id}_btn-gen" onclick="generateImage('${scene.id}')">
+                                <span>🎨</span><span id="${scene.id}_btn-text">生成图片</span>
+                            </button>
+                            ${scene.generatedImage ? `
+                                <div class="action-buttons">
+                                    <button class="btn-small btn-download" onclick="downloadImage('${scene.id}')">下载</button>
+                                    <button class="btn-small" onclick="regenerateImage('${scene.id}')">重新生成</button>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <!-- 第3列：视频提示词 + 生成视频 -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <span class="panel-icon">🎬</span>
+                                视频生成
+                            </div>
+                            <textarea class="input-textarea" placeholder="描述视频内容..." 
+                                      oninput="updateSceneData('${scene.id}', 'videoPrompt', this.value)">${scene.videoPrompt}</textarea>
+                            <div class="video-ref-grid" style="margin-top: 8px;">
+                                ${videoRefSlotsHtml}
+                            </div>
+                            ${!scene.videoRefImages.some(img => img !== null) ? 
+                                '<div class="hint-text">提示：生成图片后自动添加到参考图1</div>' : ''
+                            }
+                            <button class="btn-gen-video" id="${scene.id}_btn-gen-video" onclick="generateVideo('${scene.id}')" 
+                                    ${!scene.videoRefImages.some(img => img !== null) ? 'disabled' : ''}>
+                                <span>🎬</span>
+                                <span id="${scene.id}_video-btn-text">
+                                    ${!scene.videoRefImages.some(img => img !== null) ? '先生成图片或上传参考图' : '生成视频'}
+                                </span>
+                            </button>
+                            <button class="btn-regen-prompt" onclick="regenerateVideoPrompt('${scene.id}')">✨ 智能生成提示词</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', rowHtml);
+            
+            if (scene.progress > 0 && scene.progress < 100) {
+                const progressBar = document.getElementById(scene.id + '_progress');
+                if (progressBar) {
+                    progressBar.classList.add('active');
+                    progressBar.innerHTML = `<div class="progress-fill" style="width: ${scene.progress}%"></div>`;
+                }
+            }
+        }
+        
+        // 上传参考图
+        function uploadRefImage(sceneId, refIndex) {
+            currentUploadSceneId = sceneId;
+            currentUploadRefIndex = refIndex;
+            document.getElementById('ref-image-input').click();
+        }
+        
+        function handleRefImageUpload(event) {
+            const files = event.target.files;
+            if (!currentUploadSceneId || currentUploadRefIndex === null || files.length === 0) return;
+            
+            const scene = scenes.find(s => s.id === currentUploadSceneId);
+            if (!scene) return;
+            
+            const file = files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                scene.referenceImages[currentUploadRefIndex] = e.target.result;
+                
+                const refSlot = document.getElementById(currentUploadSceneId + '_ref_' + currentUploadRefIndex);
+                if (refSlot) {
+                    refSlot.classList.add('has-image');
+                    refSlot.innerHTML = `
+                        <img src="${e.target.result}">
+                        <span class="ref-number">${currentUploadRefIndex + 1}</span>
+                    `;
+                }
+                
+                currentUploadSceneId = null;
+                currentUploadRefIndex = null;
+            };
+            
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+        
+        // 上传视频参考图
+        function uploadVideoRefImage(sceneId, refIndex) {
+            currentUploadSceneId = sceneId;
+            currentVideoRefIndex = refIndex;
+            document.getElementById('video-ref-input').click();
+        }
+        
+        function handleVideoRefUpload(event) {
+            const files = event.target.files;
+            if (!currentUploadSceneId || currentVideoRefIndex === null || files.length === 0) return;
+            
+            const scene = scenes.find(s => s.id === currentUploadSceneId);
+            if (!scene) return;
+            
+            const file = files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                scene.videoRefImages[currentVideoRefIndex] = e.target.result;
+                
+                const refSlot = document.getElementById(currentUploadSceneId + '_video_ref_' + currentVideoRefIndex);
+                if (refSlot) {
+                    refSlot.classList.add('has-image');
+                    refSlot.innerHTML = `
+                        <img src="${e.target.result}">
+                        <span class="video-ref-number">${currentVideoRefIndex + 1}</span>
+                    `;
+                }
+                
+                // 立即更新视频生成按钮状态
+                const videoBtn = document.getElementById(currentUploadSceneId + '_btn-gen-video');
+                const videoBtnText = document.getElementById(currentUploadSceneId + '_video-btn-text');
+                if (videoBtn && videoBtnText) {
+                    const hasVideoRefs = scene.videoRefImages.some(img => img !== null);
+                    if (hasVideoRefs) {
+                        videoBtn.disabled = false;
+                        videoBtnText.textContent = '生成视频';
+                    }
+                }
+                
+                currentUploadSceneId = null;
+                currentVideoRefIndex = null;
+            };
+            
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+        
+        // 更新场景数据
+        function updateSceneData(sceneId, field, value) {
+            const scene = scenes.find(s => s.id === sceneId);
+            if (scene) {
+                scene[field] = value;
+            }
         }
         
         // 生成图片
-        async function generateImage() {
-            const prompt = document.getElementById('prompt-input').value.trim();
-            const aspectRatio = document.getElementById('aspect-ratio').value;
-            const imageSize = document.getElementById('image-size').value;
-            const apiKey = document.getElementById('grsai-key').value;
+        async function generateImage(sceneId) {
+            const scene = scenes.find(s => s.id === sceneId);
+            if (!scene) return;
             
-            if (!prompt) {
-                alert('请输入提示词');
-                return;
-            }
+            const apiKey = document.getElementById('grsai-key').value;
+            const model = document.getElementById('image-model').value;
+            const aspectRatio = document.getElementById('image-ratio').value;
+            const imageSize = document.getElementById('image-size').value;
             
             if (!apiKey) {
                 alert('请先配置API Key（点击顶部"API配置"按钮）');
                 return;
             }
             
-            // 检查今日生成次数
-            if (hasGeneratedToday()) {
-                alert('今日测试次数已达上限，请明天再试');
+            if (!scene.imagePrompt && !scene.referenceImages.some(img => img !== null)) {
+                alert('请输入生图说明或上传参考图');
                 return;
             }
             
-            // 更新UI状态
-            const btn = document.getElementById('btn-generate');
-            const progressSection = document.getElementById('progress-section');
-            const resultSection = document.getElementById('result-section');
+            const btn = document.getElementById(sceneId + '_btn-gen');
+            const progressBar = document.getElementById(sceneId + '_progress');
             
             btn.disabled = true;
-            btn.innerHTML = '<span class="loading-spinner"></span><span>生成中...</span>';
-            progressSection.classList.add('active');
-            resultSection.classList.remove('active');
+            btn.innerHTML = '<span class="loading-spinner"></span><span id="' + sceneId + '_btn-text">生成中...</span>';
+            progressBar.classList.add('active');
+            progressBar.innerHTML = '<div class="progress-fill" style="width: 0%"></div>';
             
-            updateProgress(0, '正在初始化生成任务...');
+            scene.progress = 0;
             
             try {
-                // 调用GRSai API（webHook设置为-1，立即返回任务ID）
+                const validRefs = scene.referenceImages.filter(img => img !== null);
+                
                 const response = await fetch(`${CONFIG.grsai.baseUrl}/v1/draw/nano-banana`, {
                     method: 'POST',
                     headers: {
@@ -810,50 +929,47 @@
                         'Authorization': `Bearer ${apiKey}`
                     },
                     body: JSON.stringify({
-                        model: currentModel,
-                        prompt: prompt,
+                        model: model,
+                        prompt: scene.imagePrompt || '',
                         aspectRatio: aspectRatio,
                         imageSize: imageSize,
-                        urls: [],
+                        urls: validRefs,
                         webHook: '-1'
                     })
                 });
                 
                 if (!response.ok) {
-                    throw new Error('请求失败');
+                    throw new Error('请求失败: ' + response.status);
                 }
                 
                 const data = await response.json();
+                console.log('API响应:', data);
                 
                 if (data.code === 0 && data.data && data.data.id) {
-                    generationId = data.data.id;
-                    await pollGenerationResult(generationId);
+                    await pollImageResult(sceneId, data.data.id, scene);
                 } else {
                     throw new Error(data.msg || '生成失败');
                 }
             } catch (error) {
-                updateProgress(0, '生成失败：' + error.message);
-                btn.disabled = false;
-                btn.innerHTML = '<span>🎨</span><span>开始生成</span>';
+                console.error('生成错误:', error);
+                alert('生成失败：' + error.message);
+                resetGenerateButton(sceneId);
             }
         }
         
-        // 轮询生成结果
-        async function pollGenerationResult(taskId) {
+        // 轮询图片结果
+        async function pollImageResult(sceneId, taskId, scene) {
             const apiKey = document.getElementById('grsai-key').value;
-            const maxAttempts = 60; // 最多轮询60次（约60秒）
+            const maxAttempts = 60;
             let attempts = 0;
-            
-            updateProgress(10, '生成任务已创建，正在处理中...');
             
             const pollInterval = setInterval(async () => {
                 attempts++;
                 
                 if (attempts > maxAttempts) {
                     clearInterval(pollInterval);
-                    updateProgress(0, '生成超时，请重试');
-                    document.getElementById('btn-generate').disabled = false;
-                    document.getElementById('btn-generate').innerHTML = '<span>🎨</span><span>开始生成</span>';
+                    alert('生成超时，请重试');
+                    resetGenerateButton(sceneId);
                     return;
                 }
                 
@@ -868,83 +984,127 @@
                     });
                     
                     if (!response.ok) {
-                        throw new Error('轮询失败');
+                        throw new Error('轮询失败: ' + response.status);
                     }
                     
                     const data = await response.json();
+                    console.log('轮询响应:', data);
                     
                     if (data.code === 0 && data.data) {
                         const { progress, status, results } = data.data;
                         
-                        // 更新进度
-                        const displayProgress = Math.min(progress, 99);
-                        updateProgress(displayProgress, getProgressText(progress, status));
+                        scene.progress = progress;
+                        const progressBar = document.getElementById(sceneId + '_progress');
+                        if (progressBar) {
+                            progressBar.innerHTML = `<div class="progress-fill" style="width: ${progress}%"></div>`;
+                        }
                         
-                        // 检查是否完成
                         if (status === 'succeeded' && results && results.length > 0) {
                             clearInterval(pollInterval);
                             
-                            // 显示结果
-                            showResult(results[0], data.data);
+                            scene.generatedImage = results[0].url;
+                            scene.progress = 100;
                             
-                            // 记录生成历史
-                            recordGeneration();
+                            // 自动添加到视频参考图的第一个位置
+                            scene.videoRefImages[0] = scene.generatedImage;
+                            
+                            refreshSceneRow(sceneId);
+                            
+                            alert('图片生成成功！已自动添加到视频参考图1');
                         } else if (status === 'failed') {
                             clearInterval(pollInterval);
-                            updateProgress(0, '生成失败：' + (data.data.failure_reason || '未知错误'));
-                            document.getElementById('btn-generate').disabled = false;
-                            document.getElementById('btn-generate').innerHTML = '<span>🎨</span><span>开始生成</span>';
+                            alert('生成失败：' + (data.data.failure_reason || '未知错误'));
+                            resetGenerateButton(sceneId);
                         }
                     }
                 } catch (error) {
                     console.error('轮询错误:', error);
                 }
-            }, 1000); // 每秒轮询一次
+            }, 1000);
         }
         
-        // 更新进度条
-        function updateProgress(percent, status) {
-            document.getElementById('progress-percent').textContent = percent + '%';
-            document.getElementById('progress-bar-fill').style.width = percent + '%';
-            document.getElementById('progress-status').textContent = status;
+        function resetGenerateButton(sceneId) {
+            const btn = document.getElementById(sceneId + '_btn-gen');
+            const progressBar = document.getElementById(sceneId + '_progress');
+            
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<span>🎨</span><span id="' + sceneId + '_btn-text">生成图片</span>';
+            }
+            if (progressBar) {
+                progressBar.classList.remove('active');
+            }
+            
+            const scene = scenes.find(s => s.id === sceneId);
+            if (scene) {
+                scene.progress = 0;
+            }
         }
         
-        // 获取进度文本
-        function getProgressText(progress, status) {
-            if (progress < 30) return '正在初始化AI模型...';
-            if (progress < 60) return '正在解析提示词...';
-            if (progress < 90) return '正在生成图片...';
-            return '即将完成...';
+        // 重新生成图片
+        function regenerateImage(sceneId) {
+            const scene = scenes.find(s => s.id === sceneId);
+            if (!scene) return;
+            
+            if (confirm('确认重新生成图片？当前图片将被替换。')) {
+                scene.generatedImage = null;
+                scene.progress = 0;
+                refreshSceneRow(sceneId);
+                generateImage(sceneId);
+            }
         }
         
-        // 显示结果
-        function showResult(result, data) {
-            const resultSection = document.getElementById('result-section');
-            const progressSection = document.getElementById('progress-section');
-            const btn = document.getElementById('btn-generate');
+        // 生成视频
+        async function generateVideo(sceneId) {
+            const scene = scenes.find(s => s.id === sceneId);
+            if (!scene) return;
             
-            // 保存当前图片信息
-            currentImage = result;
+            const apiKey = document.getElementById('juzi-key').value;
+            const model = document.getElementById('video-model').value;
             
-            // 显示图片
-            document.getElementById('result-image').src = result.url;
-            document.getElementById('result-time').textContent = new Date().toLocaleString();
-            document.getElementById('result-model').textContent = currentModel;
-            document.getElementById('result-size').textContent = document.getElementById('image-size').value;
-            document.getElementById('result-aspect').textContent = document.getElementById('aspect-ratio').value;
+            if (!apiKey) {
+                alert('请先配置橘子AI API Key');
+                return;
+            }
             
-            // 更新UI
-            progressSection.classList.remove('active');
-            resultSection.classList.add('active');
-            btn.disabled = false;
-            btn.innerHTML = '<span>🎨</span><span>开始生成</span>';
+            if (!scene.videoPrompt) {
+                alert('请输入视频提示词');
+                return;
+            }
+            
+            const validVideoRefs = scene.videoRefImages.filter(img => img !== null);
+            if (validVideoRefs.length === 0) {
+                alert('请上传视频参考图');
+                return;
+            }
+            
+            alert('视频生成功能开发中，敬请期待...');
+        }
+        
+        // 刷新分镜行
+        function refreshSceneRow(sceneId) {
+            const scene = scenes.find(s => s.id === sceneId);
+            if (!scene) return;
+            
+            const oldRow = document.getElementById(sceneId);
+            if (oldRow) {
+                oldRow.remove();
+            }
+            renderSceneRow(scene);
+        }
+        
+        // 删除分镜行
+        function deleteSceneRow(sceneId) {
+            if (confirm('确认删除该分镜？')) {
+                scenes = scenes.filter(s => s.id !== sceneId);
+                document.getElementById(sceneId).remove();
+                updateEmptyState();
+            }
         }
         
         // 预览图片
-        function previewImage() {
-            if (!currentImage) return;
-            
-            document.getElementById('preview-image-full').src = currentImage.url;
+        function previewImage(imageUrl) {
+            document.getElementById('preview-image-full').src = imageUrl;
             document.getElementById('preview-modal').classList.add('active');
         }
         
@@ -954,86 +1114,94 @@
         }
         
         // 下载图片
-        function downloadImage() {
-            if (!currentImage) return;
+        function downloadImage(sceneId) {
+            const scene = scenes.find(s => s.id === sceneId);
+            if (!scene || !scene.generatedImage) return;
             
             const link = document.createElement('a');
-            link.href = currentImage.url;
-            link.download = 'manju_' + Date.now() + '.png';
-            link.target = '_blank';
+            link.href = scene.generatedImage;
+            link.download = `manju_scene_${scene.number}_${Date.now()}.png`;
+            link.style.display = 'none';
+            
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
-        
-        // 保存到资源库
-        function saveToResource() {
-            if (!currentImage) return;
             
-            let resources = JSON.parse(localStorage.getItem('manju_resources') || '[]');
-            resources.unshift({
-                id: 'res_' + Date.now(),
-                name: document.getElementById('prompt-input').value.substring(0, 20) + '...',
-                url: currentImage.url,
-                type: 'image',
-                category: 'AI生成-' + currentModel,
-                createdAt: new Date().toISOString()
-            });
-            localStorage.setItem('manju_resources', JSON.stringify(resources));
+            window.open(scene.generatedImage, '_blank');
+        }
+        
+        // 智能生成视频提示词
+        function regenerateVideoPrompt(sceneId) {
+            const scene = scenes.find(s => s.id === sceneId);
+            if (!scene) return;
             
-            renderResources();
-            alert('已保存到资源库');
-        }
-        
-        // 记录生成历史
-        function recordGeneration() {
-            let records = JSON.parse(localStorage.getItem('manju_generation_history') || '[]');
-            records.push({
-                time: new Date().toISOString(),
-                count: 1
-            });
-            localStorage.setItem('manju_generation_history', JSON.stringify(records));
-        }
-        
-        // 检查今日是否已生成
-        function hasGeneratedToday() {
-            let records = JSON.parse(localStorage.getItem('manju_generation_history') || '[]');
-            const today = new Date().toISOString().split('T')[0];
-            const count = records.filter(r => r.time.startsWith(today)).reduce((sum, r) => sum + r.count, 0);
-            return count >= 1;
-        }
-        
-        // 渲染资源库
-        function renderResources() {
-            const resources = JSON.parse(localStorage.getItem('manju_resources') || '[]');
-            const container = document.getElementById('resource-list');
-            
-            if (resources.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: rgba(255, 255, 255, 0.4); font-size: 12px; margin-top: 20px;">暂无资源</p>';
-                return;
+            if (scene.imagePrompt) {
+                scene.videoPrompt = scene.imagePrompt + '，动态场景，流畅运镜';
+                const textarea = document.querySelector(`#${sceneId} textarea[oninput*="videoPrompt"]`);
+                if (textarea) {
+                    textarea.value = scene.videoPrompt;
+                }
+                alert('视频提示词已生成！');
+            } else {
+                alert('请先填写生图说明');
             }
-            
-            let html = '';
-            resources.slice(0, 6).forEach(res => {
-                html += `
-                    <div class="resource-item" onclick="window.open('${res.url}', '_blank')">
-                        <img src="${res.url}" alt="${res.name}" class="resource-thumb">
-                        <div class="resource-info">
-                            <div class="resource-name">${res.name}</div>
-                            <div class="resource-meta">${res.category}</div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
         }
         
-        // API配置弹窗
+        // 保存所有数据
+        function saveAllData() {
+            const saveData = scenes.map(scene => ({
+                ...scene,
+                referenceImages: scene.referenceImages.map(img => img ? 'SAVED' : null),
+                generatedImage: scene.generatedImage ? 'SAVED' : null,
+                videoRefImages: scene.videoRefImages.map(img => img ? 'SAVED' : null)
+            }));
+            
+            localStorage.setItem('manju_scenes', JSON.stringify(saveData));
+            localStorage.setItem('manju_scene_counter', sceneCounter);
+            
+            alert('进度已保存！（注意：图片数据未保存，刷新后需要重新生成）');
+        }
+        
+        // 加载所有数据
+        function loadAllData() {
+            const savedScenes = localStorage.getItem('manju_scenes');
+            const savedCounter = localStorage.getItem('manju_scene_counter');
+            
+            if (savedScenes) {
+                const parsedScenes = JSON.parse(savedScenes);
+                sceneCounter = parseInt(savedCounter) || 0;
+                
+                scenes = parsedScenes.map(scene => ({
+                    ...scene,
+                    referenceImages: new Array(7).fill(null),
+                    generatedImage: null,
+                    videoRefImages: new Array(3).fill(null),
+                    progress: 0,
+                    status: ''
+                }));
+                
+                scenes.forEach(scene => {
+                    renderSceneRow(scene);
+                });
+                
+                updateEmptyState();
+            }
+        }
+        
+        // 更新空状态
+        function updateEmptyState() {
+            const emptyState = document.getElementById('empty-state');
+            if (scenes.length > 0) {
+                emptyState.style.display = 'none';
+            } else {
+                emptyState.style.display = 'block';
+            }
+        }
+        
+        // API配置
         function showApiModal() {
             document.getElementById('api-modal').style.display = 'flex';
             
-            // 加载保存的配置
             const savedConfig = JSON.parse(localStorage.getItem('manju_api_config') || '{}');
             if (savedConfig.grsaiKey) document.getElementById('grsai-key').value = savedConfig.grsaiKey;
             if (savedConfig.juziKey) document.getElementById('juzi-key').value = savedConfig.juziKey;
@@ -1044,35 +1212,14 @@
         }
         
         function saveApiConfig() {
-            const grsaiKey = document.getElementById('grsai-key').value;
-            const juziKey = document.getElementById('juzi-key').value;
-            
-            const config = { grsaiKey, juziKey };
+            const config = {
+                grsaiKey: document.getElementById('grsai-key').value,
+                juziKey: document.getElementById('juzi-key').value
+            };
             localStorage.setItem('manju_api_config', JSON.stringify(config));
-            
             closeApiModal();
             alert('API配置已保存');
         }
-        
-        // 项目弹窗
-        function showProjectModal() {
-            alert('项目管理功能开发中...');
-        }
-        
-        // 切换工作区标签
-        function switchWorkTab(tab) {
-            document.querySelectorAll('.work-tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            if (tab !== 'ai') {
-                alert('该功能开发中，敬请期待...');
-            }
-        }
-        
-        // 初始化
-        window.addEventListener('DOMContentLoaded', function() {
-            renderResources();
-        });
         
         // 点击预览弹窗外部关闭
         document.getElementById('preview-modal').addEventListener('click', function(e) {
