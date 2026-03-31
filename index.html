@@ -1045,7 +1045,7 @@
         // 轮询图片结果
         async function pollImageResult(sceneId, taskId, scene) {
             const apiKey = document.getElementById('grsai-key').value;
-            const maxAttempts = 600;
+            const maxAttempts = 60;
             let attempts = 0;
             
             const pollInterval = setInterval(async () => {
@@ -1064,7 +1064,7 @@
                     }
                     
                     const data = await response.json();
-                    console.log('轮询响应:', data);
+                    console.log('[DEBUG] 轮询响应:', data);
                     
                     if (data.code === 0 && data.data) {
                         const { progress, status, results } = data.data;
