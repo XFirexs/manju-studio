@@ -653,9 +653,9 @@
         
         // 添加分镜行
         function addSceneRow() {
-            sceneCounter++;
+            const maxNumber = scenes.reduce((max, scene) => Math.max(max, scene.number), 0);
+            sceneCounter = maxNumber + 1;
             const sceneId = 'scene_' + sceneCounter;
-            
             const sceneData = {
                 id: sceneId,
                 number: sceneCounter,
@@ -666,9 +666,8 @@
                 videoRefImages: new Array(3).fill(null),
                 generatedVideo: null,
                 progress: 0,
-                status: ''
+                status: '',
             };
-            
             scenes.push(sceneData);
             renderSceneRow(sceneData);
             updateEmptyState();
@@ -966,11 +965,6 @@
             const pollInterval = setInterval(async () => {
                 attempts++;
                 
-                if (attempts > maxAttempts) {
-                    clearInterval(pollInterval);
-                    alert('生成超时，请重试');
-                    resetGenerateButton(sceneId);
-                    return;
                 }
                 
                 try {
@@ -990,30 +984,42 @@
                     const data = await response.json();
                     console.log('轮询响应:', data);
                     
-                    if (data.code === 0 && data.data) {
-                        const { progress, status, results } = data.data;
+                    if (data.code === 0) {
+                        const apiData = data.data;
+                        const { progress, status, results, failure_reason } = apiData || {};
                         
-                        scene.progress = progress;
+                        if (progress !== undefined) {
+                            scene.progress = progress;
+                            const progressBar = document.getElementById(sceneId + '_progress');
+                            if (progressBar) {
+                                progressBar.innerHTML = `<div class="progress-fill" style="width: ${progress}%"></div>`;
+                            }
+                        }
                         const progressBar = document.getElementById(sceneId + '_progress');
                         if (progressBar) {
                             progressBar.innerHTML = `<div class="progress-fill" style="width: ${progress}%"></div>`;
                         }
                         
-                        if (status === 'succeeded' && results && results.length > 0) {
+                        if (apiData) {
+                            if (status === 'succeeded' && results && results.length > 0) {
+                                clearInterval(pollInterval);
+                                scene.generatedImage = results[0].url;
+                                scene.progress = 100;
+                                scene.videoRefImages[0] = scene.generatedImage;
+                                refreshSceneRow(sceneId);
+                                console.log('图片生成成功');
+                            } else if (status === 'failed') {
+                                clearInterval(pollInterval);
+                                showFailureReason(failure_reason);
+                                resetGenerateButton(sceneId);
+                            } else if (status === 'pending' || status === 'processing') {
+                                console.log('正在生成中... 进度:' + (progress || 0) + '%');
+                            }
+                        } else {
+                            console.log('正在生成中，等待数据返回...');
+                        }
                             clearInterval(pollInterval);
-                            
-                            scene.generatedImage = results[0].url;
-                            scene.progress = 100;
-                            
-                            // 自动添加到视频参考图的第一个位置
-                            scene.videoRefImages[0] = scene.generatedImage;
-                            
-                            refreshSceneRow(sceneId);
-                            
-                            console.log('图片生成成功');
-                        } else if (status === 'failed') {
-                            clearInterval(pollInterval);
-                            showFailureReason(data.data.failure_reason);
+                            alert('生成失败：' + (data.data.failure_reason || '未知错误'));
                             resetGenerateButton(sceneId);
                         }
                     }
@@ -1097,7 +1103,16 @@
         function deleteSceneRow(sceneId) {
             if (confirm('确认删除该分镜？')) {
                 scenes = scenes.filter(s => s.id !== sceneId);
-                document.getElementById(sceneId).remove();
+                scenes.forEach((scene, index) => {
+                    scene.number = index + 1;
+                    scene.id = 'scene_' + (index + 1);
+                });
+                sceneCounter = scenes.length;
+                const container = document.getElementById('scenes-container');
+                container.innerHTML = '';
+                scenes.forEach(scene => {
+                    renderSceneRow(scene);
+                });
                 updateEmptyState();
             }
         }
@@ -1111,17 +1126,24 @@
         // 关闭预览
         function closePreview() {
 
-        function showFailureReason(reason) {
-            let msg = '生成失败：';
-            if (reason) {
-                if (reason.includes('timeout')) msg += '网络超时，请检查网络连接后重试';
-                else if (reason.includes('policy') || reason.includes('违规')) msg += '提示词违规，请修改提示词后重试';
-                else if (reason.includes('rate limit')) msg += '请求频率过高，请稍后重试';
-                else msg += reason;
+        function showFailureReason(failure_reason) {
+            let errorMsg = '生成失败：';
+            if (failure_reason) {
+                if (failure_reason.includes('timeout')) {
+                    errorMsg += '网络超时，请检查网络连接后重试';
+                } else if (failure_reason.includes('policy') || failure_reason.includes('违规')) {
+                    errorMsg += '提示词违规，请修改提示词后重试';
+                } else if (failure_reason.includes('rate limit')) {
+                    errorMsg += '请求频率过高，请稍后重试';
+                } else if (failure_reason.includes('not found')) {
+                    errorMsg += '资源未找到，请检查API配置';
+                } else {
+                    errorMsg += failure_reason;
+                }
             } else {
-                msg += '未知错误';
+                errorMsg += '未知错误';
             }
-            alert(msg);
+            alert(errorMsg);
         }
             document.getElementById('preview-modal').classList.remove('active');
         }
