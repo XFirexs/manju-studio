@@ -702,7 +702,9 @@
         
         // 添加分镜行
         function addSceneRow() {
-            sceneCounter++;
+            // 根据当前scenes的最大number来确定新场景的编号
+            const maxNumber = scenes.reduce((max, scene) => Math.max(max, scene.number), 0);
+            sceneCounter = maxNumber + 1;
             const sceneId = 'scene_' + sceneCounter;
             
             const sceneData = {
@@ -715,7 +717,7 @@
                 videoRefImages: new Array(3).fill(null),
                 generatedVideo: null,
                 progress: 0,
-                status: ''
+                status: '',
             };
             
             scenes.push(sceneData);
@@ -834,7 +836,21 @@
                 </div>
             `;
             
-            container.insertAdjacentHTML('beforeend', rowHtml);
+            // 按场景编号顺序插入
+            const existingRows = Array.from(container.children);
+            let insertBefore = null;
+            for (const row of existingRows) {
+                const existingNumber = parseInt(row.id.replace('scene_', ''));
+                if (existingNumber > scene.number) {
+                    insertBefore = row;
+                    break;
+                }
+            }
+            if (insertBefore) {
+                insertBefore.insertAdjacentHTML('beforebegin', rowHtml);
+            } else {
+                container.insertAdjacentHTML('beforeend', rowHtml);
+            }
             
             if (scene.progress > 0 && scene.progress < 100) {
                 const progressBar = document.getElementById(scene.id + '_progress');
@@ -1059,7 +1075,7 @@
                             
                             refreshSceneRow(sceneId);
                             
-                            alert('图片生成成功！已自动添加到视频参考图1');
+                            console.log('图片生成成功，已自动添加到视频参考图1');
 } else if (status === 'failed') {                            console.log('生成失败，自动重试...');                            setTimeout(() => generateImage(sceneId), 1000);                            return;                        }
                     }
                 } catch (error) {
