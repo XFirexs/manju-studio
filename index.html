@@ -1060,18 +1060,7 @@
                             refreshSceneRow(sceneId);
                             
                             alert('图片生成成功！已自动添加到视频参考图1');
-                        } else if (status === 'failed') {
-                            console.log('生成失败，自动重试...');
-                            const scene = scenes.find(s => s.id === sceneId);
-                            if (scene) {
-                                // 清除旧interval
-                                clearInterval(pollInterval);
-                                // 自动重新生成
-                                setTimeout(() => generateImage(sceneId), 1000);
-                            }
-                            return;
-                        }
-                        }
+} else if (status === 'failed') {                            console.log('生成失败，自动重试...');                            setTimeout(() => generateImage(sceneId), 1000);                            return;                        }
                     }
                 } catch (error) {
                     console.error('轮询错误:', error);
