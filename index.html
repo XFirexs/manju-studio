@@ -1157,8 +1157,26 @@
         // 删除分镜行
         function deleteSceneRow(sceneId) {
             if (confirm('确认删除该分镜？')) {
+                // 删除场景
                 scenes = scenes.filter(s => s.id !== sceneId);
                 document.getElementById(sceneId).remove();
+                
+                // 重新编号所有剩余场景
+                scenes.forEach((scene, index) => {
+                    scene.number = index + 1;
+                    scene.id = 'scene_' + (index + 1);
+                });
+                
+                // 更新sceneCounter
+                sceneCounter = scenes.length;
+                
+                // 重新渲染所有场景
+                const container = document.getElementById('scenes-container');
+                container.innerHTML = '';
+                scenes.forEach(scene => {
+                    renderSceneRow(scene);
+                });
+                
                 updateEmptyState();
             }
         }
