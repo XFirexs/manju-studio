@@ -1045,7 +1045,7 @@
         // 轮询图片结果
         async function pollImageResult(sceneId, taskId, scene) {
             const apiKey = document.getElementById('grsai-key').value;
-            const maxAttempts = 60;
+            const maxAttempts = 999999;
             let attempts = 0;
             
             const pollInterval = setInterval(async () => {
