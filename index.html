@@ -1064,7 +1064,7 @@
                     }
                     
                     const data = await response.json();
-                    console.log('[DEBUG] 轮询响应:', data);
+                    console.log('轮询响应:', data);
                     
                     if (data.code === 0 && data.data) {
                         const { progress, status, results } = data.data;
