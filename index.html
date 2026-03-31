@@ -645,8 +645,6 @@
     
     <!-- API配置弹窗 -->
     <div id="api-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 2000; align-items: center; justify-content: center;">
-
-    <!-- 超时提示模态框 -->
     <div class="timeout-modal" id="timeout-modal">
         <h3>⏱️ 生成超时</h3>
         <p>图片生成时间超过5分钟，请检查网络或稍后重试。</p>
@@ -705,7 +703,6 @@
             const maxNumber = scenes.reduce((max, scene) => Math.max(max, scene.number), 0);
             sceneCounter = maxNumber + 1;
             const sceneId = 'scene_' + sceneCounter;
-            
             const sceneData = {
                 id: sceneId,
                 number: sceneCounter,
@@ -718,7 +715,6 @@
                 progress: 0,
                 status: '',
             };
-            
             scenes.push(sceneData);
             renderSceneRow(sceneData);
             updateEmptyState();
@@ -1160,20 +1156,16 @@
         function deleteSceneRow(sceneId) {
             if (confirm('确认删除该分镜？')) {
                 scenes = scenes.filter(s => s.id !== sceneId);
-                
                 scenes.forEach((scene, index) => {
                     scene.number = index + 1;
                     scene.id = 'scene_' + (index + 1);
                 });
-                
                 sceneCounter = scenes.length;
-                
                 const container = document.getElementById('scenes-container');
                 container.innerHTML = '';
                 scenes.forEach(scene => {
                     renderSceneRow(scene);
                 });
-                
                 updateEmptyState();
             }
         }
@@ -1186,11 +1178,9 @@
         
         // 关闭预览
         function closePreview() {
-
         function showTimeoutModal() {
             document.getElementById('timeout-modal').classList.add('active');
         }
-
         function closeTimeoutModal() {
             document.getElementById('timeout-modal').classList.remove('active');
         }
