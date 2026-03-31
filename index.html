@@ -458,6 +458,48 @@
             justify-content: center;
         }
         .preview-modal.active {
+
+        /* 超时提示模态框 */
+        .timeout-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            z-index: 3000;
+            text-align: center;
+            min-width: 300px;
+        }
+        .timeout-modal.active {
+            display: block;
+        }
+        .timeout-modal h3 {
+            font-size: 24px;
+            color: #e74c3c;
+            margin-bottom: 15px;
+        }
+        .timeout-modal p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        .timeout-modal button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .timeout-modal button:hover {
+            background: #c0392b;
+        }
             display: flex;
         }
         .preview-content {
@@ -603,6 +645,13 @@
     
     <!-- API配置弹窗 -->
     <div id="api-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 2000; align-items: center; justify-content: center;">
+
+    <!-- 超时提示模态框 -->
+    <div class="timeout-modal" id="timeout-modal">
+        <h3>⏱️ 生成超时</h3>
+        <p>图片生成时间超过5分钟，请检查网络或稍后重试。</p>
+        <button onclick="closeTimeoutModal()">确定</button>
+    </div>
         <div style="background: rgba(15, 15, 35, 0.95); border-radius: 12px; padding: 30px; max-width: 450px; width: 90%;">
             <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 20px; color: #fff;">API配置</h3>
             <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;">
@@ -960,7 +1009,7 @@
         // 轮询图片结果
         async function pollImageResult(sceneId, taskId, scene) {
             const apiKey = document.getElementById('grsai-key').value;
-            const maxAttempts = 60;
+            const maxAttempts = 300; // 5分钟
             let attempts = 0;
             
             const pollInterval = setInterval(async () => {
@@ -968,7 +1017,7 @@
                 
                 if (attempts > maxAttempts) {
                     clearInterval(pollInterval);
-                    alert('生成超时，请重试');
+                    showTimeoutModal();
                     resetGenerateButton(sceneId);
                     return;
                 }
@@ -1110,6 +1159,14 @@
         
         // 关闭预览
         function closePreview() {
+
+        function showTimeoutModal() {
+            document.getElementById('timeout-modal').classList.add('active');
+        }
+
+        function closeTimeoutModal() {
+            document.getElementById('timeout-modal').classList.remove('active');
+        }
             document.getElementById('preview-modal').classList.remove('active');
         }
         
