@@ -702,7 +702,6 @@
         
         // 添加分镜行
         function addSceneRow() {
-            // 根据当前scenes的最大number来确定新场景的编号
             const maxNumber = scenes.reduce((max, scene) => Math.max(max, scene.number), 0);
             sceneCounter = maxNumber + 1;
             const sceneId = 'scene_' + sceneCounter;
@@ -836,7 +835,6 @@
                 </div>
             `;
             
-            // 按场景编号顺序插入
             const existingRows = Array.from(container.children);
             let insertBefore = null;
             for (const row of existingRows) {
@@ -1076,7 +1074,11 @@
                             refreshSceneRow(sceneId);
                             
                             console.log('图片生成成功，已自动添加到视频参考图1');
-} else if (status === 'failed') {                            console.log('生成失败，自动重试...');                            setTimeout(() => generateImage(sceneId), 1000);                            return;                        }
+                        } else if (status === 'failed') {
+                            clearInterval(pollInterval);
+                            alert('生成失败：' + (data.data.failure_reason || '未知错误'));
+                            resetGenerateButton(sceneId);
+                        }
                     }
                 } catch (error) {
                     console.error('轮询错误:', error);
@@ -1157,20 +1159,15 @@
         // 删除分镜行
         function deleteSceneRow(sceneId) {
             if (confirm('确认删除该分镜？')) {
-                // 删除场景
                 scenes = scenes.filter(s => s.id !== sceneId);
-                document.getElementById(sceneId).remove();
                 
-                // 重新编号所有剩余场景
                 scenes.forEach((scene, index) => {
                     scene.number = index + 1;
                     scene.id = 'scene_' + (index + 1);
                 });
                 
-                // 更新sceneCounter
                 sceneCounter = scenes.length;
                 
-                // 重新渲染所有场景
                 const container = document.getElementById('scenes-container');
                 container.innerHTML = '';
                 scenes.forEach(scene => {
