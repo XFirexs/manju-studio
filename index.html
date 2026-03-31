@@ -647,7 +647,7 @@
         </div>
         
         <!-- 分镜列表容器 -->
-        <div id="scenes-container">
+        <div id="scenes-container"><!-- 默认分镜 --><div class="scene-row" id="scene_1"><div class="scene-header"><span class="scene-number">分镜 #1</span></div><div class="scene-grid"><div class="ref-slot" onclick="uploadRefImage('scene_1',0)"><span class="upload-icon">+</span><span class="ref-number">1</span></div></div></div>
             <!-- 动态添加分镜行 -->
         </div>
         
@@ -709,10 +709,10 @@
         let currentVideoRefIndex = null;
         
         // 初始化
-        window.onload = function() {
+        window.addEventListener('DOMContentLoaded', function() {
             loadAllData();
             
-            if (true) { // 强制添加
+            if (scenes.length === 0) {
                 addSceneRow();
             }
         });
