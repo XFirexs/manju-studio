@@ -458,48 +458,6 @@
             justify-content: center;
         }
         .preview-modal.active {
-
-        /* 超时提示模态框 */
-        .timeout-modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255, 255, 255, 0.95);
-            color: #333;
-            padding: 30px 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            z-index: 3000;
-            text-align: center;
-            min-width: 300px;
-        }
-        .timeout-modal.active {
-            display: block;
-        }
-        .timeout-modal h3 {
-            font-size: 24px;
-            color: #e74c3c;
-            margin-bottom: 15px;
-        }
-        .timeout-modal p {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 25px;
-        }
-        .timeout-modal button {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .timeout-modal button:hover {
-            background: #c0392b;
-        }
             display: flex;
         }
         .preview-content {
@@ -645,11 +603,6 @@
     
     <!-- API配置弹窗 -->
     <div id="api-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 2000; align-items: center; justify-content: center;">
-    <div class="timeout-modal" id="timeout-modal">
-        <h3>⏱️ 生成超时</h3>
-        <p>图片生成时间超过5分钟，请检查网络或稍后重试。</p>
-        <button onclick="closeTimeoutModal()">确定</button>
-    </div>
         <div style="background: rgba(15, 15, 35, 0.95); border-radius: 12px; padding: 30px; max-width: 450px; width: 90%;">
             <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 20px; color: #fff;">API配置</h3>
             <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;">
@@ -700,9 +653,9 @@
         
         // 添加分镜行
         function addSceneRow() {
-            const maxNumber = scenes.reduce((max, scene) => Math.max(max, scene.number), 0);
-            sceneCounter = maxNumber + 1;
+            sceneCounter++;
             const sceneId = 'scene_' + sceneCounter;
+            
             const sceneData = {
                 id: sceneId,
                 number: sceneCounter,
@@ -713,8 +666,9 @@
                 videoRefImages: new Array(3).fill(null),
                 generatedVideo: null,
                 progress: 0,
-                status: '',
+                status: ''
             };
+            
             scenes.push(sceneData);
             renderSceneRow(sceneData);
             updateEmptyState();
@@ -1027,7 +981,7 @@
                 
                 if (attempts > maxAttempts) {
                     clearInterval(pollInterval);
-                    showTimeoutModal();
+                    alert('生成超时，请重试');
                     resetGenerateButton(sceneId);
                     return;
                 }
@@ -1049,32 +1003,43 @@
                     const data = await response.json();
                     console.log('轮询响应:', data);
                     
-                    if (data.code === 0 && data.data) {
-                        const { progress, status, results } = data.data;
+                    if (data.code === 0) {
+                        const apiData = data.data;
+                        const { progress, status, results, failure_reason } = apiData || {};
                         
-                        scene.progress = progress;
-                        const progressBar = document.getElementById(sceneId + '_progress');
-                        if (progressBar) {
-                            progressBar.innerHTML = `<div class="progress-fill" style="width: ${progress}%"></div>`;
+                        if (apiData) {
+                            if (status === 'succeeded' && results && results.length > 0) {
+                                clearInterval(pollInterval);
+                                scene.generatedImage = results[0].url;
+                                scene.progress = 100;
+                                scene.videoRefImages[0] = scene.generatedImage;
+                                refreshSceneRow(sceneId);
+                                console.log('图片生成成功');
+                            } else if (status === 'failed') {
+                                clearInterval(pollInterval);
+                                let errorMsg = '生成失败：';
+                                if (failure_reason) {
+                                    if (failure_reason.includes('timeout')) {
+                                        errorMsg += '网络超时，请检查网络连接后重试';
+                                    } else if (failure_reason.includes('policy') || failure_reason.includes('违规')) {
+                                        errorMsg += '提示词违规，请修改提示词后重试';
+                                    } else if (failure_reason.includes('rate limit')) {
+                                        errorMsg += '请求频率过高，请稍后重试';
+                                    } else {
+                                        errorMsg += failure_reason;
+                                    }
+                                } else {
+                                    errorMsg += '未知错误';
+                                }
+                                alert(errorMsg);
+                                resetGenerateButton(sceneId);
+                            } else if (status === 'pending' || status === 'processing') {
+                                console.log('正在生成中... 进度:' + (progress || 0) + '%');
+                            }
+                        } else {
+                            console.log('正在生成中，等待数据返回...');
                         }
-                        
-                        if (status === 'succeeded' && results && results.length > 0) {
-                            clearInterval(pollInterval);
-                            
-                            scene.generatedImage = results[0].url;
-                            scene.progress = 100;
-                            
-                            // 自动添加到视频参考图的第一个位置
-                            scene.videoRefImages[0] = scene.generatedImage;
-                            
-                            refreshSceneRow(sceneId);
-                            
-                            console.log('图片生成成功，已自动添加到视频参考图1');
-                        } else if (status === 'failed') {
-                            clearInterval(pollInterval);
-                            alert('生成失败：' + (data.data.failure_reason || '未知错误'));
-                            resetGenerateButton(sceneId);
-                        }
+                    }
                     }
                 } catch (error) {
                     console.error('轮询错误:', error);
@@ -1169,6 +1134,8 @@
                 updateEmptyState();
             }
         }
+            }
+        }
         
         // 预览图片
         function previewImage(imageUrl) {
@@ -1178,12 +1145,6 @@
         
         // 关闭预览
         function closePreview() {
-        function showTimeoutModal() {
-            document.getElementById('timeout-modal').classList.add('active');
-        }
-        function closeTimeoutModal() {
-            document.getElementById('timeout-modal').classList.remove('active');
-        }
             document.getElementById('preview-modal').classList.remove('active');
         }
         
